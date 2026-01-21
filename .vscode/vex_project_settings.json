@@ -1,0 +1,19 @@
+{
+	"extension": {
+		"version": "0.7.2025041600",
+		"json": 2
+	},
+	"project": {
+		"name": "95070C_OOD_2025-2026",
+		"description": "A re-structured code with proper OOD-style structure.",
+		"creationDate": "12/27/2025, 10:56:30 PM",
+		"platform": "V5",
+		"language": "cpp",
+		"slot": 2,
+		"sdkVersion": "V5_20240802_15_00_00",
+		"cpp": {
+			"includePath": [],
+			"printf_float": true
+		}
+	}
+}
