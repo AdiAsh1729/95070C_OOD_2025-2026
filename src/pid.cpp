@@ -28,7 +28,7 @@ PID::PID(double startError, double kp, double ki, double kd, double startIntegra
 {};
 
 bool PID::settled() {
-    return (std::abs(this->error) < deadband) || (counter > counterLimit);
+    return (std::abs(this->error) < deadband) || ((counter > counterLimit) && (counterLimit != 0));
 };
 
 double PID::output() {
@@ -52,7 +52,7 @@ double PID::output() {
     }
 
     if(this->motorOutput != 0) {
-        if(std::abs(this->motorOutput - this->previousMotorOutput) < this->stallCounter) {
+        if(std::abs(this->error - this->previousError) < this->stallCounter) {
             counter++;
         }
     }

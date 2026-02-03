@@ -1,5 +1,9 @@
 #include "util.h"
 
+double percentToVolt(double percent) {
+    return percent * 12 / 100;
+}
+
 double getSign(double input) {
     return (input > 0) - (input < 0);
 }
