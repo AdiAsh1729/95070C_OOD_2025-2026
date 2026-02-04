@@ -343,20 +343,32 @@ void Robot::driverControl() {
 
 //==== Robot Autonomous Functions ====//
 void Robot::setPIDConstants() {
+    //==== How To Tune ====//
+    /*
+    Step 1: Tune kp until the robot just overshoots, tune to the nearest 10th
+    Step 2: Increase kd until the robot movement is smoother, either good enough or just undershoots
+    Step 3 (optional): Increase ki, but it will be very small, ~0.001 - 0.002
+
+    Step 1: For the bearing PID: tune a slow but consistent drive PID
+    Step 2: Set the ki to 0
+    Step 3: Increase kp to the nearest 10th, you can test by nudging the robot
+    Step 4: Might need to tune kd if the bearing PID isn't smooth
+    */
+
     //==== Drive Distance Constants ====//
-    chassis.driveDistanceOutputConstants.kp = 0.75;
-    chassis.driveDistanceOutputConstants.ki = 0.001;
-    chassis.driveDistanceOutputConstants.kd = 0.65;
+    chassis.driveDistanceOutputConstants.kp = 0;
+    chassis.driveDistanceOutputConstants.ki = 0;
+    chassis.driveDistanceOutputConstants.kd = 0;
 
     chassis.driveDistanceLogicConstants.startIntegral = 10;
 
-    chassis.driveDistanceSettleConstants.deadband = 0.5;
+    chassis.driveDistanceSettleConstants.deadband = 0.125;
     chassis.driveDistanceSettleConstants.stallCounter = 0.1;
     chassis.driveDistanceSettleConstants.counterLimit = 25;
 
     chassis.driveDistanceControlOutputConstants.minimumMotorOutput = percentToVolt(2);
     chassis.driveDistanceControlOutputConstants.maximumMotorOutput = percentToVolt(99.9);
-    chassis.driveDistanceControlOutputConstants.slewRate = 2;
+    chassis.driveDistanceControlOutputConstants.slewRate = 99.9; //might have to tune this
 
 
     chassis.bearingOutputConstants.kp = 0;
@@ -381,13 +393,13 @@ void Robot::setPIDConstants() {
 
     chassis.driveDistanceSlowLogicConstants.startIntegral = 10;
 
-    chassis.driveDistanceSlowSettleConstants.deadband = 0.5;
+    chassis.driveDistanceSlowSettleConstants.deadband = 0.125;
     chassis.driveDistanceSlowSettleConstants.stallCounter = 0.1;
     chassis.driveDistanceSlowSettleConstants.counterLimit = 25;
 
     chassis.driveDistanceSlowControlOutputConstants.minimumMotorOutput = percentToVolt(2);
     chassis.driveDistanceSlowControlOutputConstants.maximumMotorOutput = percentToVolt(99.9);
-    chassis.driveDistanceSlowControlOutputConstants.slewRate = 2;
+    chassis.driveDistanceSlowControlOutputConstants.slewRate = 99.9; //might have to tune this
 
 
     chassis.bearingSlowOutputConstants.kp = 0;
