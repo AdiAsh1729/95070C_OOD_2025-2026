@@ -5,7 +5,7 @@
 #include <iostream>
 using namespace vex;
 
-double percentToVolts(double percent);
+double percentToVolt(double percent);
 double getSign(double input);
 double getTurnError(double heading, double target);
 double clamp(double input, double minimumValue, double maximumValue);

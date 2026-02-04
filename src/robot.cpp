@@ -258,7 +258,6 @@ void Robot::preAuton() {
                 //runningPreAuton = false;
                 //std::cout << runningPreAuton << std::endl;
                 driverSelectorLoopVariable = 0 ; //exits the loop, a cleaner break
-                //return;
             }
 
             wait(20, msec);
@@ -352,11 +351,11 @@ void Robot::setPIDConstants() {
     chassis.driveDistanceLogicConstants.startIntegral = 10;
 
     chassis.driveDistanceSettleConstants.deadband = 0.5;
-    chassis.driveDistanceSettleConstants.stallCounter = 0.2;
+    chassis.driveDistanceSettleConstants.stallCounter = 0.1;
     chassis.driveDistanceSettleConstants.counterLimit = 25;
 
-    chassis.driveDistanceControlOutputConstants.minimumMotorOutput = 0.5;
-    chassis.driveDistanceControlOutputConstants.maximumMotorOutput = 99.9;
+    chassis.driveDistanceControlOutputConstants.minimumMotorOutput = percentToVolt(2);
+    chassis.driveDistanceControlOutputConstants.maximumMotorOutput = percentToVolt(99.9);
     chassis.driveDistanceControlOutputConstants.slewRate = 2;
 
 
@@ -370,8 +369,8 @@ void Robot::setPIDConstants() {
     chassis.bearingSettleConstants.stallCounter = 0;
     chassis.bearingSettleConstants.counterLimit = 0;
 
-    chassis.bearingControlOutputConstants.minimumMotorOutput = 0;
-    chassis.bearingControlOutputConstants.maximumMotorOutput = 99.9;
+    chassis.bearingControlOutputConstants.minimumMotorOutput = percentToVolt(0);
+    chassis.bearingControlOutputConstants.maximumMotorOutput = percentToVolt(99.9);
     chassis.bearingControlOutputConstants.slewRate = 99.9;
 
 
@@ -383,11 +382,11 @@ void Robot::setPIDConstants() {
     chassis.driveDistanceSlowLogicConstants.startIntegral = 10;
 
     chassis.driveDistanceSlowSettleConstants.deadband = 0.5;
-    chassis.driveDistanceSlowSettleConstants.stallCounter = 0.2;
+    chassis.driveDistanceSlowSettleConstants.stallCounter = 0.1;
     chassis.driveDistanceSlowSettleConstants.counterLimit = 25;
 
-    chassis.driveDistanceSlowControlOutputConstants.minimumMotorOutput = 0.5;
-    chassis.driveDistanceSlowControlOutputConstants.maximumMotorOutput = 99.9;
+    chassis.driveDistanceSlowControlOutputConstants.minimumMotorOutput = percentToVolt(2);
+    chassis.driveDistanceSlowControlOutputConstants.maximumMotorOutput = percentToVolt(99.9);
     chassis.driveDistanceSlowControlOutputConstants.slewRate = 2;
 
 
@@ -401,8 +400,8 @@ void Robot::setPIDConstants() {
     chassis.bearingSlowSettleConstants.stallCounter = 0;
     chassis.bearingSlowSettleConstants.counterLimit = 0;
 
-    chassis.bearingSlowControlOutputConstants.minimumMotorOutput = 0;
-    chassis.bearingSlowControlOutputConstants.maximumMotorOutput = 10;
+    chassis.bearingSlowControlOutputConstants.minimumMotorOutput = percentToVolt(0);
+    chassis.bearingSlowControlOutputConstants.maximumMotorOutput = percentToVolt(99.9);
     chassis.bearingSlowControlOutputConstants.slewRate = 99.9;
 
 
@@ -414,11 +413,11 @@ void Robot::setPIDConstants() {
     chassis.turnToHeadingLogicConstants.startIntegral = 20;
 
     chassis.turnToHeadingSettleConstants.deadband = 3;
-    chassis.turnToHeadingSettleConstants.stallCounter = 5;
+    chassis.turnToHeadingSettleConstants.stallCounter = 0.5;
     chassis.turnToHeadingSettleConstants.counterLimit = 25;
 
-    chassis.turnToHeadingControlOutputConstants.minimumMotorOutput = 0.5;
-    chassis.turnToHeadingControlOutputConstants.maximumMotorOutput = 99.9;
+    chassis.turnToHeadingControlOutputConstants.minimumMotorOutput = percentToVolt(2);
+    chassis.turnToHeadingControlOutputConstants.maximumMotorOutput = percentToVolt(99.9);
     chassis.turnToHeadingControlOutputConstants.slewRate = 99.9;
 };
 

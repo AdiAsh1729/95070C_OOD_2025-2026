@@ -28,12 +28,14 @@ PID::PID(double startError, double kp, double ki, double kd, double startIntegra
 {};
 
 bool PID::settled() {
-    return (std::abs(this->error) < deadband) || ((counter > counterLimit) && (counterLimit != 0));
+    return (std::abs(this->error) < deadband) || ((counter > counterLimit) && (counterLimit != 0)); //checks if the robot is within the deadband or is stalling(only checked if stalling matters -> e.g. in bearing PID, counterLimit is 0)
 };
 
 double PID::output() {
+    //==== Derivative Calculation ====//
     this->derivative = (this->error - this->previousError) * 50;
     
+    //=== Integral Calculation ====//
     if(std::abs(this->error) < this->startIntegral) {
         this->integral += this->error / 50;
     }
@@ -44,12 +46,16 @@ double PID::output() {
         }
     }
 
-    this->motorOutput = this->error * this->kp + this->integral * this->ki + this->derivative * this->kd; //main output
-    clamp(this->motorOutput, this->minimumMotorOutput, this->maximumMotorOutput);
+    //==== Main Output ====//
+    this->motorOutput = this->error * this->kp + this->integral * this->ki + this->derivative * this->kd;
 
-    if(getSign(this->motorOutput) * (this->motorOutput - this->previousMotorOutput) > this->slewRate) {
+    clamp(this->motorOutput, this->minimumMotorOutput, this->maximumMotorOutput); //clamps the motor output between the minimum and maximum values
+
+    if(getSign(this->motorOutput) * (this->motorOutput - this->previousMotorOutput) > this->slewRate) { //slew rate controller
         this->motorOutput = this->previousMotorOutput + slewRate * getSign(this->motorOutput - this->previousMotorOutput);
     }
+
+    //==== Stall Check ====//
 
     if(this->motorOutput != 0) {
         if(std::abs(this->error - this->previousError) < this->stallCounter) {
@@ -61,6 +67,7 @@ double PID::output() {
         counter = 0;
     }
 
+    //==== Previous Values ====//
     this->previousMotorOutput = this->motorOutput;
     this->previousError = this->error;
 

@@ -81,7 +81,7 @@ class Drivetrain {
             double slewRate;
         };
 
-        //==== DRIVE DISTANCE (V) CONSTANTS ====//
+        //==== DRIVE DISTANCE CONSTANTS ====//
         outputConstants driveDistanceOutputConstants;
         logicConstants driveDistanceLogicConstants;
         settleConstants driveDistanceSettleConstants;
@@ -93,19 +93,7 @@ class Drivetrain {
         controlOutputConstants bearingControlOutputConstants;
 
 
-
-        outputConstants driveDistanceVOutputConstants;
-        logicConstants driveDistanceVLogicConstants;
-        settleConstants driveDistanceVSettleConstants;
-        controlOutputConstants driveDistanceVControlOutputConstants;
-
-        outputConstants bearingVOutputConstants;
-        logicConstants bearingVLogicConstants;
-        settleConstants bearingVSettleConstants;
-        controlOutputConstants bearingVControlOutputConstants;
-
-
-        //==== DRIVE DISTANCE SLOW (V) CONSTANTS ====// 
+        //==== DRIVE DISTANCE SLOW CONSTANTS ====// 
         outputConstants driveDistanceSlowOutputConstants;
         logicConstants driveDistanceSlowLogicConstants;
         settleConstants driveDistanceSlowSettleConstants;
@@ -117,40 +105,18 @@ class Drivetrain {
         controlOutputConstants bearingSlowControlOutputConstants;
 
 
-
-        outputConstants driveDistanceVSlowOutputConstants;
-        logicConstants driveDistanceVSlowLogicConstants;
-        settleConstants driveDistanceVSlowSettleConstants;
-        controlOutputConstants driveDistanceVSlowControlOutputConstants;
-
-        outputConstants bearingVSlowVutputConstants;
-        logicConstants bearingVSlowLogicConstants;
-        settleConstants bearingVSlowSettleConstants;
-        controlOutputConstants bearingVSlowControlOutputConstants;
-
-
-        //==== TURN TO HEADING (V) CONSTANTS ====//
+        //==== TURN TO HEADING CONSTANTS ====//
         outputConstants turnToHeadingOutputConstants;
         logicConstants turnToHeadingLogicConstants;
         settleConstants turnToHeadingSettleConstants;
         controlOutputConstants turnToHeadingControlOutputConstants;
 
-        outputConstants turnToHeadingVOutputConstants;
-        logicConstants turnToHeadingVLogicConstants;
-        settleConstants turnToHeadingVSettleConstants;
-        controlOutputConstants turnToHeadingVControlOutputConstants;
-
         
-        //==== ARC TO HEADING (V) CONSTANTS ====//
+        //==== ARC TO HEADING CONSTANTS ====//
         outputConstants arcToHeadingOutputConstants;
         logicConstants arcToHeadingLogicConstants;
         settleConstants arcToHeadingSettleConstants;
         controlOutputConstants arcToHeadingControlOutputConstants;
-
-        outputConstants arcToHeadingVOutputConstants;
-        logicConstants arcToHeadingVLogicConstants;
-        settleConstants arcToHeadingVSettleConstants;
-        controlOutputConstants arcToHeadingVControlOutputConstants;
 
 
 

@@ -153,23 +153,33 @@ void Drivetrain::driveDistance(double targetDistance) {
     const double leftVelocity = 1;
     const double rightVelocity = 1;
 
+    //left and right outputs
+    double leftOutput = 0;
+    double rightOutput = 0;
+
     LeftDrive.resetPosition();
     RightDrive.resetPosition();
 
     do {
-        drivePID.error = drivePID.startError - (RightDrive.position(turns) + LeftDrive.position(turns))/2 * (this->wheelDiameter) * M_PI * (this->gearRatio);
+        drivePID.error = drivePID.startError - (RightDrive.position(degrees) + LeftDrive.position(degrees))/(2 * 360) * (this->wheelDiameter) * M_PI * (this->gearRatio);
         bearingPID.error = getTurnError(Inertial.heading(), startHeading);
 
         driveOutput = drivePID.output();
         bearingOutput = bearingPID.output();
-        
-        if((LeftDrive.velocity(pct) == 0) != (RightDrive.velocity(pct) == 0)) {
-            driveOutput = 0;
-            bearingOutput = 0;
+
+        leftOutput = percentToVolt(driveOutput + bearingOutput);
+        rightOutput = percentToVolt(driveOutput - bearingOutput);
+
+        if(leftVelocity < rightVelocity) {
+            rightOutput *= rightVelocity/leftVelocity;
         }
 
-        LeftDrive.spin(forward, driveOutput + bearingOutput, pct);
-        RightDrive.spin(forward, driveOutput - bearingOutput, pct);
+        if(rightVelocity < leftVelocity) {
+            rightOutput *= rightVelocity/leftVelocity;
+        }
+
+        LeftDrive.spin(forward, leftOutput, voltageUnits::volt);
+        RightDrive.spin(forward, rightOutput, voltageUnits::volt);
 
         wait(20, msec);
     } while(!drivePID.settled());
@@ -193,23 +203,33 @@ void Drivetrain::driveDistanceSlow(double targetDistance) {
     const double leftVelocity = 1;
     const double rightVelocity = 1;
 
+    //left and right outputs
+    double leftOutput = 0;
+    double rightOutput = 0;
+
     LeftDrive.resetPosition();
     RightDrive.resetPosition();
 
     do {
-        drivePID.error = drivePID.startError - (RightDrive.position(turns) + LeftDrive.position(turns))/2 * (this->wheelDiameter) * M_PI * (this->gearRatio);
+        drivePID.error = drivePID.startError - (RightDrive.position(degrees) + LeftDrive.position(degrees))/(2 * 360) * (this->wheelDiameter) * M_PI * (this->gearRatio);
         bearingPID.error = getTurnError(Inertial.heading(), startHeading);
         
         driveOutput = drivePID.output();
         bearingOutput = bearingPID.output();
-        
-        if((LeftDrive.velocity(pct) == 0) != (RightDrive.velocity(pct) == 0)) {
-            driveOutput = 0;
-            bearingOutput = 0;
+
+        leftOutput = percentToVolt(driveOutput + bearingOutput);
+        rightOutput = percentToVolt(driveOutput - bearingOutput);
+
+        if(leftVelocity < rightVelocity) {
+            rightOutput *= rightVelocity/leftVelocity;
         }
 
-        LeftDrive.spin(forward, driveOutput + bearingOutput, pct);
-        RightDrive.spin(forward, driveOutput - bearingOutput, pct);
+        if(rightVelocity < leftVelocity) {
+            rightOutput *= rightVelocity/leftVelocity;
+        }
+
+        LeftDrive.spin(forward, leftOutput, voltageUnits::volt);
+        RightDrive.spin(forward, rightOutput, voltageUnits::volt);
 
         wait(20, msec);
     } while(!drivePID.settled());
@@ -225,17 +245,32 @@ void Drivetrain::turnToHeading(double targetHeading) {
 
     double turnOutput;
 
+    //find these 2 using the ratio code in drivercontrol
+    const double leftVelocity = 1;
+    const double rightVelocity = 1;
+
+    //left and right outputs
+    double leftOutput = 0;
+    double rightOutput = 0;
+
     do {
         turnPID.error = getTurnError(Inertial.heading(), targetHeading);
 
         turnOutput = turnPID.output();
 
-        if((LeftDrive.velocity(pct) == 0) != (RightDrive.velocity(pct) == 0)) {
-            turnPID.motorOutput = 0;
+        leftOutput = percentToVolt(turnOutput);
+        rightOutput = percentToVolt(turnOutput);
+
+        if(leftVelocity < rightVelocity) {
+            rightOutput *= rightVelocity/leftVelocity;
         }
 
-        LeftDrive.spin(forward, turnOutput, pct);
-        RightDrive.spin(reverse, turnOutput, pct);
+        if(rightVelocity < leftVelocity) {
+            rightOutput *= rightVelocity/leftVelocity;
+        }
+
+        LeftDrive.spin(forward, leftOutput, voltageUnits::volt);
+        RightDrive.spin(reverse, rightOutput, voltageUnits::volt);
 
         wait(20, msec);
     } while(!turnPID.settled());
@@ -251,7 +286,7 @@ void Drivetrain::runArcadeDrive(Button SlowButtonID, double scaleDriveSpeed, dou
     const controller::button SlowButton = Controller.getButton(SlowButtonID);
 
     static double totalCount = 0;
-    static double totalRatio = 0;
+    static double total = 0;
 
     double buttonScaleSpeed = 1;
     
@@ -273,10 +308,10 @@ void Drivetrain::runArcadeDrive(Button SlowButtonID, double scaleDriveSpeed, dou
 
     if(RightDrive.velocity(pct) > 0) {
         totalCount++;
-        totalRatio += LeftDrive.velocity(pct)/RightDrive.velocity(pct);
+        total += LeftDrive.velocity(pct)/RightDrive.velocity(pct);
     }
 
-    //std::cout << totalRatio/totalCount << std::endl;
+    std::cout << total/totalCount << std::endl; //
 
     LeftDrive.spin(forward);
     RightDrive.spin(forward);
@@ -286,7 +321,7 @@ void Drivetrain::runTankDrive(Button SlowButtonID, double scaleDriveSpeed, doubl
     const controller::button SlowButton = Controller.getButton(SlowButtonID);
 
     static double totalCount = 0;
-    static double totalRatio = 0;
+    static double total = 0;
 
     double buttonScaleSpeed = 1;
     
@@ -308,10 +343,10 @@ void Drivetrain::runTankDrive(Button SlowButtonID, double scaleDriveSpeed, doubl
 
     if(RightDrive.velocity(pct) > 0) {
         totalCount++;
-        totalRatio += LeftDrive.velocity(pct)/RightDrive.velocity(pct);
+        total += LeftDrive.velocity(pct)/RightDrive.velocity(pct);
     }
 
-    //std::cout << totalRatio/totalCount << std::endl;
+    std::cout << total/totalCount << std::endl;
 
     LeftDrive.spin(forward);
     RightDrive.spin(forward);
