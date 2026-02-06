@@ -356,7 +356,7 @@ void Robot::setPIDConstants() {
     */
 
     //==== Drive Distance Constants ====//
-    chassis.driveDistanceOutputConstants.kp = 0;
+    chassis.driveDistanceOutputConstants.kp = 2;
     chassis.driveDistanceOutputConstants.ki = 0;
     chassis.driveDistanceOutputConstants.kd = 0;
 
@@ -371,7 +371,7 @@ void Robot::setPIDConstants() {
     chassis.driveDistanceControlOutputConstants.slewRate = 99.9; //might have to tune this
 
 
-    chassis.bearingOutputConstants.kp = 0;
+    chassis.bearingOutputConstants.kp = 0.2;
     chassis.bearingOutputConstants.ki = 0;
     chassis.bearingOutputConstants.kd = 0;
 
@@ -434,7 +434,7 @@ void Robot::setPIDConstants() {
 };
 
 void Robot::RightQual() {
-    chassis.driveDistance(48);
+    chassis.driveDistanceSlow(48);
 };
 
 void Robot::LeftQual() {
