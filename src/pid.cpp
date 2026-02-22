@@ -1,6 +1,6 @@
 #include "pid.h"
 
-PID::PID(double startError, double kp, double ki, double kd, double startIntegral, double deadband, double stallCounter, double counterLimit, double minimumMotorOutput, double maximumMotorOutput, double slewRate, IntegralMethod integralMethod):
+PID::PID(double startError, double kp, double ki, double kd, double startIntegral, double deadband, double stallCounter, double counterLimit, double minimumMotorOutput, double maximumMotorOutput, double accelerationSlew, double minDecelerationSlew, double maxDecelerationSlew, IntegralMethod integralMethod):
     startError(startError),
 
     kp(kp),
@@ -22,7 +22,9 @@ PID::PID(double startError, double kp, double ki, double kd, double startIntegra
     previousMotorOutput(0),
     minimumMotorOutput(minimumMotorOutput),
     maximumMotorOutput(maximumMotorOutput),
-    slewRate(slewRate),
+    accelerationSlew(accelerationSlew),
+    minDecelerationSlew(minDecelerationSlew),
+    maxDecelerationSlew(maxDecelerationSlew),
 
     integralMethod(integralMethod)
 {};
@@ -49,25 +51,40 @@ double PID::output() {
     //==== Main Output ====//
     this->motorOutput = this->error * this->kp + this->integral * this->ki + this->derivative * this->kd;
 
-    clamp(this->motorOutput, this->minimumMotorOutput, this->maximumMotorOutput); //clamps the motor output between the minimum and maximum values
+    //==== Slew Rate Controllers ====//
+    if(std::abs(this->motorOutput) > std::abs(previousMotorOutput) && getSign(this->motorOutput) == getSign(this->previousMotorOutput)) { //slew controller for acceleration if not crossed target
+        if(std::abs(this->motorOutput - this->previousMotorOutput) > accelerationSlew) {
+            this->motorOutput = this->previousMotorOutput + getSign(this->motorOutput) * accelerationSlew;
+        }
+    }
 
-    if(getSign(this->motorOutput) * (this->motorOutput - this->previousMotorOutput) > this->slewRate) { //slew rate controller
-        this->motorOutput = this->previousMotorOutput + slewRate * getSign(this->motorOutput - this->previousMotorOutput);
+    if(std::abs(this->motorOutput) < std::abs(this->previousMotorOutput) && getSign(this->motorOutput) == getSign(this->previousMotorOutput)) { //slew controller for deceleration if not crossed target
+        if(std::abs(this->previousMotorOutput - this->motorOutput) < this->minDecelerationSlew) {
+            this->motorOutput = this->previousMotorOutput - minDecelerationSlew * getSign(this->motorOutput);
+        }
+
+        if(getSign(this->motorOutput) * (this->previousMotorOutput - this->motorOutput) > this->maxDecelerationSlew) {
+            this->motorOutput = this->previousMotorOutput - maxDecelerationSlew * getSign(this->motorOutput);
+        }
+    }
+    
+    //==== Clamper ====//
+    if(this->motorOutput != 0) { //clamps if not first move and if not applying deceleration slew after crossing target
+        this->motorOutput = clamp(this->motorOutput, this->minimumMotorOutput, this->maximumMotorOutput); //clamps the motor output between the minimum and maximum values
     }
 
     //==== Stall Check ====//
-
     if(this->motorOutput != 0) {
         if(std::abs(this->error - this->previousError) < this->stallCounter) {
-            counter++;
+            this->counter++;
         }
     }
 
     else {
-        counter = 0;
+        this->counter = 0;
     }
 
-    //==== Previous Values ====//
+    //==== Updates Previous Values ====//
     this->previousMotorOutput = this->motorOutput;
     this->previousError = this->error;
 

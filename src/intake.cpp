@@ -12,25 +12,17 @@ Intake::Intake(Custom_Controller& Controller, motor& Intake1, motor& Intake2, mo
     IntakeGroup(IntakeGroup),
     Descore(Descore),
     Matchloader(Matchloader),
-    MiddleGoal(MiddleGoal)
+    MiddleGoal(MiddleGoal),
+    descorePressed(0),
+    matchloaderPressed(0),
+    middleGoalPressed(0)
 {};
 
+//==== Driver Control ====//
 void Intake::runIfPressed1(Button ButtonForwardID, Button ButtonReverseID, Button ButtonStopID, int forwardVelocityPct, int reverseVelocityPct) {
     const controller::button& ButtonForward = Controller.getButton(ButtonForwardID);
     const controller::button& ButtonReverse = Controller.getButton(ButtonReverseID);
     const controller::button& ButtonStop = Controller.getButton(ButtonStopID);
-    
-    /*if(Controller.pressed(ButtonForwardID)) {
-        Intake1.spin(forward, forwardVelocityPct, pct);
-    }
-
-    if(Controller.pressed(ButtonReverseID)) {
-        Intake1.spin(reverse, reverseVelocityPct, pct);
-    }
-
-    if(Controller.pressed(ButtonStopID)) {
-        Intake1.stop();
-    }*/
 
     if(ButtonForward.pressing()) {
         //std::cout << "Button Forward" << std::endl;
@@ -38,12 +30,10 @@ void Intake::runIfPressed1(Button ButtonForwardID, Button ButtonReverseID, Butto
     }
 
     if(ButtonReverse.pressing()) {
-        //std::cout << "Button Reverse" << std::endl;
         Intake1.spin(reverse, reverseVelocityPct, pct);
     }
 
     if(ButtonStop.pressing()) {
-        //std::cout << "Button Stop" << std::endl;
         Intake1.stop();
     }
 };
@@ -53,30 +43,15 @@ void Intake::runIfPressed2(Button ButtonForwardID, Button ButtonReverseID, Butto
     const controller::button& ButtonReverse = Controller.getButton(ButtonReverseID);
     const controller::button& ButtonStop = Controller.getButton(ButtonStopID);
 
-    /*if(Controller.pressed(ButtonForwardID)) {
-        Intake2.spin(forward, forwardVelocityPct, pct);
-    }
-
-    if(Controller.pressed(ButtonReverseID)) {
-        Intake2.spin(reverse, reverseVelocityPct, pct);
-    }
-
-    if(Controller.pressed(ButtonStopID)) {
-        Intake2.stop();
-    }*/
-
     if(ButtonForward.pressing()) {
-        //std::cout << "Button Forward" << std::endl;
         Intake2.spin(forward, forwardVelocityPct, pct);
     }
 
     if(ButtonReverse.pressing()) {
-        //std::cout << "Button Reverse" << std::endl;
         Intake2.spin(reverse, reverseVelocityPct, pct);
     }
 
     if(ButtonStop.pressing()) {
-        //std::cout << "Button Stop" << std::endl;
         Intake2.stop();
     }
 };
@@ -86,37 +61,42 @@ void Intake::runIfPressedGroup(Button ButtonForwardID, Button ButtonReverseID, B
     const controller::button& ButtonReverse = Controller.getButton(ButtonReverseID);
     const controller::button& ButtonStop = Controller.getButton(ButtonStopID);
 
-    /*if(Controller.pressed(ButtonForwardID)) {
-        std::cout << "Button Forward" << std::endl;
-        IntakeGroup.spin(forward, forwardVelocityPct, pct);
-    }
-
-    if(Controller.pressed(ButtonReverseID)) {
-        std::cout << "Button Reverse" << std::endl;
-        IntakeGroup.spin(reverse, reverseVelocityPct, pct);
-    }
-
-    if(Controller.pressed(ButtonStopID)) {
-        std::cout << "Button Stop" << std::endl;
-        IntakeGroup.stop();
-    }*/
-
     if(ButtonForward.pressing()) {
-        //std::cout << "Button Forward" << std::endl;
         IntakeGroup.spin(forward, forwardVelocityPct, pct);
     }
 
     if(ButtonReverse.pressing()) {
-        //std::cout << "Button Reverse" << std::endl;
         IntakeGroup.spin(reverse, reverseVelocityPct, pct);
     }
 
     if(ButtonStop.pressing()) {
-        //std::cout << "Button Stop" << std::endl;
         IntakeGroup.stop();
     }
 };
 
+void Intake::toggleDescore(Button ToggleButtonID) {
+    if(Controller.pressed(ToggleButtonID)) {
+        Descore.set(!Descore.value());
+    }
+};
+
+void Intake::toggleMatchloader(Button ToggleButtonID) {
+    if(Controller.pressed(ToggleButtonID)) {
+        Matchloader.set(!Matchloader.value());
+    }
+};
+
+void Intake::toggleMiddleGoal(Button ToggleButtonID) {
+    if(Controller.pressed(ToggleButtonID)) {
+        MiddleGoal.set(!MiddleGoal.value());
+    }
+};
+
+bool Intake::getMiddleGoal() {
+    return MiddleGoal.value();
+}
+
+//==== Pre-Auton / Auton ====//
 void Intake::setDescore(bool state) {
     Descore.set(state);
 };
@@ -129,48 +109,50 @@ void Intake::setMiddleGoal(bool state)  {
     MiddleGoal.set(state);
 };
 
-void Intake::toggleDescore(Button ToggleButtonID) {
-    if(Controller.pressed(ToggleButtonID)) {
-        descorePressed++;
-    }
-    std::cout << Button(ToggleButtonID) << std::endl;
-    if(descorePressed % 2 == 0) {
-        Descore.set(false);
-        std::cout<<"Setting Descore to False"<<std::endl;
-    }
-
-    else {
-        Descore.set(true);
-        std::cout<<"Setting Descore to True"<<std::endl;
-    }
+//==== Auton ====//
+void Intake::run1(directionType direction, double velocity, percentUnits units) {
+    Intake1.spin(direction, velocity, units);
 };
 
-void Intake::toggleMatchloader(Button ToggleButtonID) {
-    if(Controller.pressed(ToggleButtonID)) {
-        matchloaderPressed++;
-    }
-
-    if(matchloaderPressed % 2 == 0) {
-        Matchloader.set(false);
-    }
-
-    else {
-        Matchloader.set(true);
-    }
+void Intake::run2(directionType direction, double velocity, percentUnits units) {
+    Intake2.spin(direction, velocity, units);
 };
 
-void Intake::toggleMiddleGoal(Button ToggleButtonID) {
-    if(Controller.pressed(ToggleButtonID)) {
-        middleGoalPressed++;
-    }
+void Intake::runGroup(directionType direction, double velocity, percentUnits units) {
+    IntakeGroup.spin(direction, velocity, units);
+};
 
-    if(descorePressed % 2 == 0) {
-        MiddleGoal.set(false);
-    }
+void Intake::stop1() {
+    Intake1.stop();
+};
 
-    else {
-        MiddleGoal.set(true);
-    }
+void Intake::stop2() {
+    Intake2.stop();
+};
+
+void Intake::stopGroup() {
+    IntakeGroup.stop();
+};
+
+void Intake::intakeStore(double speed1, double speed2) {
+    MiddleGoal.set(false);
+
+    Intake1.spin(forward, speed1, voltageUnits::volt);
+    Intake2.spin(forward, speed2, voltageUnits::volt);
+}
+
+void Intake::scoreLong(double speed1, double speed2) {
+    MiddleGoal.set(false);
+
+    Intake1.spin(forward, speed1, voltageUnits::volt);
+    Intake2.spin(reverse, speed2, voltageUnits::volt);
+};
+
+void Intake::scoreMiddle(double speed1, double speed2) {
+    MiddleGoal.set(true);
+
+    Intake1.spin(forward, speed1, voltageUnits::volt);
+    Intake2.spin(forward, speed2, voltageUnits::volt);
 };
 
 void Intake::oscillate(int numberOfOscillations, double speedOfOscillation, double timeOfOscillation) {

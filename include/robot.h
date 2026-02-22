@@ -5,7 +5,6 @@
 #include "custom_motor.h"
 #include "drivetrain.h"
 #include "intake.h"
-#include "type_defines.h"
 
 class Robot {
     private:

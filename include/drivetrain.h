@@ -2,6 +2,7 @@
 
 #include "vex.h"
 #include "custom_controller.h"
+#include "custom_motor.h"
 #include "odometry.h"
 #include "pid.h"
 #include "type_defines.h"
@@ -12,21 +13,26 @@ using namespace vex;
 class Drivetrain {
     private:
         Custom_Controller& Controller;
-        motor_group& LeftDrive;
-        motor_group& RightDrive;
+        Custom_Motor_Group& LeftDrive;
+        Custom_Motor_Group& RightDrive;
         rotation& HorizontalTracker;
         rotation& VerticalTracker;
         inertial& Inertial;
 
-        double gearRatio;
-        double wheelDiameter;
-        double distanceToSideOfDrivetrain;
-        double horizontalWheelDiameter;
-        double verticalWheelDiameter;
-        double horizontalToCenterDistance;
-        double verticalToCenterDistance;
+        double inertialScale;
+        double gearRatio; //actually the reciprocal of the gear ratio
+        //one of leftVelocity and rightVelocity should be 1
+        double leftVelocity; //find this using ratio code in driver control
+        double rightVelocity; //find this using ratio code in driver control
+        double horizontalWheelDiameter; //in inches
+        double verticalWheelDiameter; //in inches
+        double horizontalToCenterDistance; //inches
+        double verticalToCenterDistance; //inches
 
         OdometryType odometryType;
+
+        bool previousChaining; //checks if previous move was chaining
+        double previousDirection; //which direction LeftDrive moved, 1 if forward, -1 if reverse
 
         //Trampoline method setup
         static int trackPositionStatic(void* instance); //the actual static function that is passed into the task positionTrackingTask
@@ -35,15 +41,15 @@ class Drivetrain {
         task positionTrackingTask;
 
     public:
-        Drivetrain(Custom_Controller& Controller, motor_group& LeftDrive, motor_group& RightDrive, inertial& Inertial, double gearRatio, double wheelDiameter);
-        Drivetrain(Custom_Controller& Controller, motor_group& LeftDrive, motor_group& RightDrive, inertial& Inertial, double gearRatio, double wheelDiameter, double distanceToSideOfDrivetrain);
-        Drivetrain(Custom_Controller& Controller, motor_group& LeftDrive, motor_group& RightDrive, rotation& HorizontalTracker, inertial& Inertial, double gearRatio,  double wheelDiameter, double distanceToSideOfDrivetrain, double horizontalWheelDiameter, double horizontalToCenterDistance);
-        Drivetrain(Custom_Controller& Controller, motor_group& LeftDrive, motor_group& RightDrive, rotation& HorizontalTracker, rotation& VerticalTracker, inertial& Inertial, double gearRatio,  double wheelDiameter, double distanceToSideOfDrivetrain, double horizontalWheelDiameter, double verticalWheelDiameter, double horizontalToCenterDistance, double verticalToCenterDistance);
+        Drivetrain(Custom_Controller& Controller, Custom_Motor_Group& LeftDrive, Custom_Motor_Group& RightDrive, inertial& Inertial, double inertialScale, double gearRatio, double leftVelocity, double rightVelocity, double verticalWheelDiameter);
+        Drivetrain(Custom_Controller& Controller, Custom_Motor_Group& LeftDrive, Custom_Motor_Group& RightDrive, rotation& HorizontalTracker, inertial& Inertial, double inertialScale, double gearRatio, double leftVelocity, double rightVelocity, double horizontalWheelDiameter, double verticalWheelDiameter, double horizontalToCenterDistance);
+        Drivetrain(Custom_Controller& Controller, Custom_Motor_Group& LeftDrive, Custom_Motor_Group& RightDrive, rotation& HorizontalTracker, rotation& VerticalTracker, inertial& Inertial, double inertialScale, double gearRatio, double leftVelocity, double rightVelocity, double horizontalWheelDiameter, double verticalWheelDiameter, double horizontalToCenterDistance, double verticalToCenterDistance);
 
         Odometry odometry;
 
         void calibrateInertial();
-        void resetInertialHeading();
+        void setInertialHeading(double heading);
+        double getInertialHeading();
 
         void resetHorizontalTrackerPosition();
         void resetVerticalTrackerPosition();
@@ -78,7 +84,9 @@ class Drivetrain {
             double previousMotorOutput; //not in PID constructor
             double minimumMotorOutput;
             double maximumMotorOutput;
-            double slewRate;
+            double accelerationSlew;
+            double minDecelerationSlew;
+            double maxDecelerationSlew;
         };
 
         //==== DRIVE DISTANCE CONSTANTS ====//
@@ -92,6 +100,12 @@ class Drivetrain {
         settleConstants bearingSettleConstants;
         controlOutputConstants bearingControlOutputConstants;
 
+        //driveToPoint turning constants
+        outputConstants driveTurnOutputConstants;
+        logicConstants driveTurnLogicConstants;
+        settleConstants driveTurnSettleConstants;
+        controlOutputConstants driveTurnControlOutputConstants;
+
 
         //==== DRIVE DISTANCE SLOW CONSTANTS ====// 
         outputConstants driveDistanceSlowOutputConstants;
@@ -104,6 +118,12 @@ class Drivetrain {
         settleConstants bearingSlowSettleConstants;
         controlOutputConstants bearingSlowControlOutputConstants;
 
+        //driveToPointSlow turning constants
+        outputConstants driveTurnSlowOutputConstants;
+        logicConstants driveTurnSlowLogicConstants;
+        settleConstants driveTurnSlowSettleConstants;
+        controlOutputConstants driveTurnSlowControlOutputConstants;
+
 
         //==== TURN TO HEADING CONSTANTS ====//
         outputConstants turnToHeadingOutputConstants;
@@ -111,29 +131,24 @@ class Drivetrain {
         settleConstants turnToHeadingSettleConstants;
         controlOutputConstants turnToHeadingControlOutputConstants;
 
-        
-        //==== ARC TO HEADING CONSTANTS ====//
-        outputConstants arcToHeadingOutputConstants;
-        logicConstants arcToHeadingLogicConstants;
-        settleConstants arcToHeadingSettleConstants;
-        controlOutputConstants arcToHeadingControlOutputConstants;
-
 
 
         //==== PID MOVEMENTS====//
-        void driveDistance(double targetDistance);
-        void driveDistanceV(double targetDistance);
+        void driveDistance(double targetDistance, bool exit);
+        void driveToPoint(double xCoordinate, double yCoordinate, bool exit);
 
-        void driveDistanceSlow(double targetDistance);
-        void driveDistanceSlowV(double targetDistance);
+        void driveDistanceSlow(double targetDistance, bool exit);
+        void driveToPointSlow(double finalX, double finalY, bool exit);
 
-        void turnToHeading(double targetHeading);
-
-        void arcToHeading(double radius, double targetHeading);
-        void arcToHeadingV(double radius, double targetHeading);
+        void turnToHeading(double targetHeading, bool exit);
+        void turnToPoint(double finalX, double finalY, bool exit);
 
         void oscillate(int numberOfOscillations, double speedOfOscillation, double timeOfOscillation); //moves the drivetrain forward and backward for matchloading
 
+        //==== AUTON MOVEMENTS ====//
+        void leftSpin(directionType direction, int velocity, percentUnits units);
+        void rightSpin(directionType direction, int velocity, percentUnits units);
+        void stop();
 
         //==== DRIVER CONTROL ====//
         void runArcadeDrive(Button SlowButtonID, double scaleDriveSpeed, double scaleTurnSpeed);

@@ -32,11 +32,13 @@ class PID {
         double previousMotorOutput; //how fast our motors spun the previous loop
         double minimumMotorOutput; //minimum speed our motors need to spin at
         double maximumMotorOutput; //maximum speed our motors can spin at
-        double slewRate; //difference allowed between our previous and current motor output for acceleration
+        double accelerationSlew; //difference allowed between our previous and current motor output for acceleration
+        double minDecelerationSlew; //difference allowed between our previous and current motor output for deceleration
+        double maxDecelerationSlew; //difference allowed between our previous and current motor output for deceleration if motion chaining
 
         IntegralMethod integralMethod;
         
-        PID(double startError, double kp, double ki, double kd, double startIntegral, double deadband, double stallCounter, double counterLimit, double minimumMotorOutput, double maximumMotorOutput, double slewRate, IntegralMethod integralMethod); //our constructor, what we use to create our object
+        PID(double startError, double kp, double ki, double kd, double startIntegral, double deadband, double stallCounter, double counterLimit, double minimumMotorOutput, double maximumMotorOutput, double accelerationSlew, double minDecelerationSlew, double maxDecelerationSlew, IntegralMethod integralMethod); //our constructor, what we use to create our object
 
         bool settled(); //a function which returns true or false: if true, our PID is finished, otherwise our PID needs to keep on running
         double output(); //how fast our motors will spin this loop, function which returns our motor output

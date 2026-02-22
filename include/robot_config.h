@@ -18,11 +18,11 @@ extern Custom_Controller Controller;
 extern Custom_Motor FL;
 extern Custom_Motor ML;
 extern Custom_Motor BL;
-extern motor_group LeftDrive;
+extern Custom_Motor_Group LeftDrive;
 extern Custom_Motor FR;
 extern Custom_Motor MR;
 extern Custom_Motor BR;
-extern motor_group RightDrive;
+extern Custom_Motor_Group RightDrive;
 
 extern motor Intake1;
 extern motor Intake2;
@@ -33,6 +33,8 @@ extern digital_out Matchloader;
 extern digital_out Park;
 
 extern inertial Inertial;
+
+extern rotation HorizontalTracker;
 
 extern Drivetrain chassis;
 extern Intake intake;
