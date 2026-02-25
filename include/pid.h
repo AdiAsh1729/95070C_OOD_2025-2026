@@ -27,18 +27,29 @@ class PID {
         double stallCounter; //difference between previous error and current error which tells you if you should add onto counter
         double counterLimit; //checks if the robot has stalled for too long
         double counter; //a stall constant, ++ every time diff in position is less than stallCounter
+        bool exit; //used for motion chaining, if true, ends motion, if false, doesn't
         
         //===== CONTROL_OUTPUT_CONSTANTS =====//
+<<<<<<< Updated upstream
         double prevMotorOutput; //how fast our motors spun the prev loop
         double minMotorOutput; //minimum speed our motors need to spin at
         double maxMotorOutput; //maximum speed our motors can spin at
+=======
+        double previousMotorOutput; //how fast our motors spun the previous loop
+        double minimumMotorOutput; //minimum speed our motors need to spin at
+        double maximumMotorOutput; //maximum speed our motors can spin at
+>>>>>>> Stashed changes
         double accelerationSlew; //difference allowed between our previous and current motor output for acceleration
         double minDecelerationSlew; //difference allowed between our previous and current motor output for deceleration
         double maxDecelerationSlew; //difference allowed between our previous and current motor output for deceleration if motion chaining
 
         IntegralMethod integralMethod;
         
+<<<<<<< Updated upstream
         PID(double startError, double kp, double ki, double kd, double startIntegral, double deadband, double stallCounter, double counterLimit, double minMotorOutput, double maxMotorOutput, double accelerationSlew, double minDecelerationSlew, double maxDecelerationSlew, IntegralMethod integralMethod); //our constructor, what we use to create our object
+=======
+        PID(double startError, double kp, double ki, double kd, double startIntegral, double deadband, double stallCounter, double counterLimit, bool exit, double minimumMotorOutput, double maximumMotorOutput, double accelerationSlew, double minDecelerationSlew, double maxDecelerationSlew, IntegralMethod integralMethod); //our constructor, what we use to create our object
+>>>>>>> Stashed changes
 
         void setError(double startError);
         void setOutputConstants(double kp, double ki, double kd);

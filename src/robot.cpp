@@ -264,6 +264,11 @@ void Robot::preAuton() {
             std::cout << "Waiting for all released" << std::endl;
         }
         std::cout << "Exited while loop" << std::endl;
+<<<<<<< Updated upstream
+=======
+        //std::cout << "PreAuton ended2" << std::endl;
+        //std::cout << runningPreAuton << std::endl;
+>>>>>>> Stashed changes
         wait(20, msec);
         runningPreAuton = false;
         return;
@@ -295,7 +300,11 @@ void Robot::runIntake() {
     switch(CurrentDriver) {
         case Nikhil:
             intake.runIfPressed1(R1, R2, B, 99, 99);
+<<<<<<< Updated upstream
             intake.runIfPressed2(R1, R2, B, 0, 99);
+=======
+            intake.runIfPressed2(R1, R2, B, 10, 99);
+>>>>>>> Stashed changes
 
             if(!intake.getMiddleGoal()) { //if scoring on long goal
                 intake.runIfPressed1(L1, L2, B, 99, 99);
@@ -316,7 +325,11 @@ void Robot::runIntake() {
 
         case Thomas:
             intake.runIfPressed1(R1, R2, B, 99, 99);
+<<<<<<< Updated upstream
             intake.runIfPressed2(R1, R2, B, 0, 99);
+=======
+            intake.runIfPressed2(R1, R2, B, 10, 99);
+>>>>>>> Stashed changes
 
             if(!intake.getMiddleGoal()) { //if scoring on long goal
                 intake.runIfPressed1(L1, L2, B, 99, 99);
@@ -337,7 +350,11 @@ void Robot::runIntake() {
 
         case Shaurya:
             intake.runIfPressed1(R1, R2, B, 99, 99);
+<<<<<<< Updated upstream
             intake.runIfPressed2(R1, R2, B, 0, 99);
+=======
+            intake.runIfPressed2(R1, R2, B, 10, 99);
+>>>>>>> Stashed changes
 
             if(!intake.getMiddleGoal()) { //if scoring on long goal
                 intake.runIfPressed1(L1, L2, B, 99, 99);
@@ -358,7 +375,11 @@ void Robot::runIntake() {
 
         case Noob:
             intake.runIfPressed1(R1, R2, B, 99, 99);
+<<<<<<< Updated upstream
             intake.runIfPressed2(R1, R2, B, 0, 99);
+=======
+            intake.runIfPressed2(R1, R2, B, 10, 99);
+>>>>>>> Stashed changes
 
             if(!intake.getMiddleGoal()) { //if scoring on long goal
                 intake.runIfPressed1(L1, L2, B, 99, 99);
@@ -414,12 +435,19 @@ void Robot::setPIDConstants() {
     //note that lowering the P value in PID functions basically increases the amount of distance the PID gets to decelerate
 
     //==== Drive Distance Constants ====//
+<<<<<<< Updated upstream
     chassis.driveOutputConstants.kp = 9;
     chassis.driveOutputConstants.ki = 0;
     chassis.driveOutputConstants.kd = 0.6;
+=======
+    chassis.driveDistanceOutputConstants.kp = 9;
+    chassis.driveDistanceOutputConstants.ki = 0;
+    chassis.driveDistanceOutputConstants.kd = 0.6;
+>>>>>>> Stashed changes
 
     chassis.driveLogicConstants.startIntegral = 10;
 
+<<<<<<< Updated upstream
     chassis.driveSettleConstants.deadband = 0.5;
     chassis.driveSettleConstants.stallCounter = 0.1;
     chassis.driveSettleConstants.counterLimit = 25;
@@ -429,6 +457,17 @@ void Robot::setPIDConstants() {
     chassis.driveControlOutputConstants.accelerationSlew = 99.9; //might have to tune this
     chassis.driveControlOutputConstants.minDecelerationSlew = 0; //might have to tune this
     chassis.driveControlOutputConstants.maxDecelerationSlew = 99.9; //might have to tune this
+=======
+    chassis.driveDistanceSettleConstants.deadband = 0.5;
+    chassis.driveDistanceSettleConstants.stallCounter = 0.1;
+    chassis.driveDistanceSettleConstants.counterLimit = 25;
+
+    chassis.driveDistanceControlOutputConstants.minimumMotorOutput = 0; 
+    chassis.driveDistanceControlOutputConstants.maximumMotorOutput = 99.9;
+    chassis.driveDistanceControlOutputConstants.accelerationSlew = 99.9; //might have to tune this
+    chassis.driveDistanceControlOutputConstants.minDecelerationSlew = 0; //might have to tune this
+    chassis.driveDistanceControlOutputConstants.maxDecelerationSlew = 99.9; //might have to tune this
+>>>>>>> Stashed changes
 
 
     //used for keeping bearing when using driveDistance
@@ -442,16 +481,27 @@ void Robot::setPIDConstants() {
     chassis.bearingSettleConstants.stallCounter = 0;
     chassis.bearingSettleConstants.counterLimit = 0;
 
+<<<<<<< Updated upstream
     chassis.bearingControlOutputConstants.minMotorOutput = 0;
     chassis.bearingControlOutputConstants.maxMotorOutput = 99.9;
+=======
+    chassis.bearingControlOutputConstants.minimumMotorOutput = 0;
+    chassis.bearingControlOutputConstants.maximumMotorOutput = 99.9;
+>>>>>>> Stashed changes
     chassis.bearingControlOutputConstants.accelerationSlew = 99.9;
     chassis.bearingControlOutputConstants.minDecelerationSlew = 0;
     chassis.bearingControlOutputConstants.maxDecelerationSlew = 99.9;
 
     //used for driveToPoint
+<<<<<<< Updated upstream
     chassis.driveTurnOutputConstants.kp = 3.25;
     chassis.driveTurnOutputConstants.ki = 0;
     chassis.driveTurnOutputConstants.kd = 0.3;
+=======
+    chassis.driveTurnOutputConstants.kp = 5;
+    chassis.driveTurnOutputConstants.ki = 0;
+    chassis.driveTurnOutputConstants.kd = 0.5;
+>>>>>>> Stashed changes
 
     chassis.driveTurnLogicConstants.startIntegral = 20;
 
@@ -459,8 +509,13 @@ void Robot::setPIDConstants() {
     chassis.driveTurnSettleConstants.stallCounter = 0;
     chassis.driveTurnSettleConstants.counterLimit = 0;
 
+<<<<<<< Updated upstream
     chassis.driveTurnControlOutputConstants.minMotorOutput = 0;
     chassis.driveTurnControlOutputConstants.maxMotorOutput = 99.9;
+=======
+    chassis.driveTurnControlOutputConstants.minimumMotorOutput = 7.7;
+    chassis.driveTurnControlOutputConstants.maximumMotorOutput = 99.9;
+>>>>>>> Stashed changes
     chassis.driveTurnControlOutputConstants.accelerationSlew = 99.9;
     chassis.driveTurnControlOutputConstants.minDecelerationSlew = 0;
     chassis.driveTurnControlOutputConstants.maxDecelerationSlew = 99.9;
@@ -473,6 +528,7 @@ void Robot::setPIDConstants() {
 
     chassis.driveSlowLogicConstants.startIntegral = 10;
 
+<<<<<<< Updated upstream
     chassis.driveSlowSettleConstants.deadband = 0.25;
     chassis.driveSlowSettleConstants.stallCounter = 0.1;
     chassis.driveSlowSettleConstants.counterLimit = 25;
@@ -482,6 +538,17 @@ void Robot::setPIDConstants() {
     chassis.driveSlowControlOutputConstants.accelerationSlew = 99.9; //might have to tune this
     chassis.driveSlowControlOutputConstants.minDecelerationSlew = 0; //might have to tune this
     chassis.driveSlowControlOutputConstants.maxDecelerationSlew = 99.9; //might have to tune this
+=======
+    chassis.driveDistanceSlowSettleConstants.deadband = 0.25;
+    chassis.driveDistanceSlowSettleConstants.stallCounter = 0.1;
+    chassis.driveDistanceSlowSettleConstants.counterLimit = 25;
+
+    chassis.driveDistanceSlowControlOutputConstants.minimumMotorOutput = 7.7;
+    chassis.driveDistanceSlowControlOutputConstants.maximumMotorOutput = 99.9;
+    chassis.driveDistanceSlowControlOutputConstants.accelerationSlew = 99.9; //might have to tune this
+    chassis.driveDistanceSlowControlOutputConstants.minDecelerationSlew = 0; //might have to tune this
+    chassis.driveDistanceSlowControlOutputConstants.maxDecelerationSlew = 99.9; //might have to tune this
+>>>>>>> Stashed changes
 
     //used for keeping bearing when using driveDistanceSlow
     chassis.bearingSlowOutputConstants.kp = 0;
@@ -494,8 +561,13 @@ void Robot::setPIDConstants() {
     chassis.bearingSlowSettleConstants.stallCounter = 0;
     chassis.bearingSlowSettleConstants.counterLimit = 0;
 
+<<<<<<< Updated upstream
     chassis.bearingSlowControlOutputConstants.minMotorOutput = 0;
     chassis.bearingSlowControlOutputConstants.maxMotorOutput = 99.9;
+=======
+    chassis.bearingSlowControlOutputConstants.minimumMotorOutput = 0;
+    chassis.bearingSlowControlOutputConstants.maximumMotorOutput = 99.9;
+>>>>>>> Stashed changes
     chassis.bearingSlowControlOutputConstants.accelerationSlew = 99.9;
     chassis.bearingSlowControlOutputConstants.minDecelerationSlew = 0;
     chassis.bearingSlowControlOutputConstants.maxDecelerationSlew = 99.9;
@@ -511,16 +583,27 @@ void Robot::setPIDConstants() {
     chassis.driveTurnSlowSettleConstants.stallCounter = 0;
     chassis.driveTurnSlowSettleConstants.counterLimit = 0;
 
+<<<<<<< Updated upstream
     chassis.driveTurnSlowControlOutputConstants.minMotorOutput = 0;
     chassis.driveTurnSlowControlOutputConstants.maxMotorOutput = 99.9;
+=======
+    chassis.driveTurnSlowControlOutputConstants.minimumMotorOutput = 7.7;
+    chassis.driveTurnSlowControlOutputConstants.maximumMotorOutput = 99.9;
+>>>>>>> Stashed changes
     chassis.driveTurnSlowControlOutputConstants.accelerationSlew = 99.9;
     chassis.driveTurnSlowControlOutputConstants.minDecelerationSlew = 0;
     chassis.driveTurnSlowControlOutputConstants.maxDecelerationSlew = 99.9;
 
     //==== Turn To Heading Constants ====//
+<<<<<<< Updated upstream
     chassis.turnOutputConstants.kp = 3.25;
     chassis.turnOutputConstants.ki = 0;
     chassis.turnOutputConstants.kd = 0.3;
+=======
+    chassis.turnToHeadingOutputConstants.kp = 3.25;
+    chassis.turnToHeadingOutputConstants.ki = 0;
+    chassis.turnToHeadingOutputConstants.kd = 0.3;
+>>>>>>> Stashed changes
 
     chassis.turnLogicConstants.startIntegral = 20;
 
@@ -528,17 +611,26 @@ void Robot::setPIDConstants() {
     chassis.turnSettleConstants.stallCounter = 0.5;
     chassis.turnSettleConstants.counterLimit = 25;
 
+<<<<<<< Updated upstream
     chassis.turnControlOutputConstants.minMotorOutput = 0;
     chassis.turnControlOutputConstants.maxMotorOutput = 99.9;
     chassis.turnControlOutputConstants.accelerationSlew = 99.9;
     chassis.turnControlOutputConstants.minDecelerationSlew = 0;
     chassis.turnControlOutputConstants.maxDecelerationSlew = 99.9;
+=======
+    chassis.turnToHeadingControlOutputConstants.minimumMotorOutput = 7.7;
+    chassis.turnToHeadingControlOutputConstants.maximumMotorOutput = 99.9;
+    chassis.turnToHeadingControlOutputConstants.accelerationSlew = 99.9;
+    chassis.turnToHeadingControlOutputConstants.minDecelerationSlew = 0;
+    chassis.turnToHeadingControlOutputConstants.maxDecelerationSlew = 99.9;
+>>>>>>> Stashed changes
 };
 
 void Robot::RightQual() {
     setPIDConstants();
     chassis.setCoordinates(0, 0, 0);
 
+<<<<<<< Updated upstream
     intake.intakeStore(12, 3); //start running intake
     //chassis.driveDistance(12, true);
     chassis.driveToPoint(0, 12, true);
@@ -581,6 +673,61 @@ void Robot::RightQual() {
     chassis.setInertialHeading(90);
     chassis.turnToHeading(183, true);
     chassis.driveDistance(-24, true); //push into control
+=======
+    wait(50, msec);
+    intake.run1(forward, 99, pct);
+    intake.run2(forward, 10, pct);
+    chassis.driveDistance(12, true);
+    wait(50, msec);
+    chassis.turnToHeading(45, true);
+    wait(50, msec);
+    chassis.driveDistance(8, true);
+    wait(50, msec);
+    chassis.driveDistance(7, true);
+    wait(50, msec);
+    chassis.turnToHeading(125, true);
+    wait(50, msec);
+    chassis.driveDistance(31, true);
+    wait(50, msec);
+    chassis.turnToHeading(180, true);
+    wait(50, msec);
+    intake.setMatchloader(true);
+    wait(500, msec);
+    chassis.driveDistance(20, true);
+    wait(50, msec);
+    //matchloading
+    chassis.leftSpin(forward, 50, pct);
+    chassis.rightSpin(forward, 50, pct);
+    wait(100, msec);
+    chassis.oscillate(2, 50, 100);
+    wait(50, msec);
+    chassis.leftSpin(forward, 5, pct);
+    chassis.rightSpin(forward, 5, pct);
+    wait(500, msec);
+    //going and scoring in long goal
+    chassis.driveDistanceTrig(-36, true, true, true);
+    chassis.leftSpin(reverse, 99, pct);
+    chassis.rightSpin(reverse, 99, pct);
+    wait(250, msec);
+    chassis.leftSpin(reverse, 5, pct);
+    chassis.rightSpin(reverse, 5, pct);
+    wait(50, msec);
+    intake.setMatchloader(false);
+    wait(50, msec);
+    intake.scoreLong(99, 99);
+    wait(2000, msec);
+    intake.stopGroup();
+    chassis.stop();
+    chassis.driveDistance(8, true);
+    wait(50, msec);
+    chassis.turnToHeading(90, true);
+    wait(50, msec);
+    chassis.driveDistance(12, true);
+    wait(50, msec);
+    chassis.turnToHeading(180, true);
+    wait(50, msec);
+    chassis.driveDistance(-30, true);
+>>>>>>> Stashed changes
 };
 
 void Robot::LeftQual() {
@@ -588,6 +735,7 @@ void Robot::LeftQual() {
     chassis.setCoordinates(0, 0, 0);
 
     //while(true) {
+<<<<<<< Updated upstream
     //    std::cout << chassis.odometry.xCoordinate << ", " << chassis.odometry.yCoordinate << ", " << chassis.odometry.globalOrientation << ", " << chassis.getInertialHeading() << std::endl;
     //    wait(100, msec);
     //}
@@ -639,6 +787,12 @@ void Robot::LeftQual() {
     chassis.setInertialHeading(90);
     chassis.turnToHeading(183, true);
     chassis.driveDistance(-24, true); //push into control
+=======
+        //std::cout << chassis.odometry.xCoordinate << ", " << chassis.odometry.yCoordinate << ", " << chassis.odometry.globalOrientation << ", " << chassis.getInertialHeading() << std::endl;
+        //wait(100, msec);
+    //}
+    chassis.driveDistance(32, true);
+>>>>>>> Stashed changes
 };
 
 void Robot::RightElim() {
