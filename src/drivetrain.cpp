@@ -45,7 +45,6 @@ Drivetrain::Drivetrain(Custom_Controller& Controller, Custom_Motor_Group& LeftDr
     horizontalWheelDiameter(horizontalWheelDiameter),
     verticalWheelDiameter(verticalWheelDiameter),
     horizontalToCenterDistance(horizontalToCenterDistance),
-<<<<<<< Updated upstream
     odometryType(OneTrackerOdometry), //enum
     drivePID(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Decay),
     bearingPID(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Reset),
@@ -58,9 +57,6 @@ Drivetrain::Drivetrain(Custom_Controller& Controller, Custom_Motor_Group& LeftDr
     prevError(0),
     prevIntegral(0),
     prevMotorOutput(0),
-=======
-    odometryType(OneTrackerOdometry),
->>>>>>> Stashed changes
     odometry(horizontalToCenterDistance, 0) //distance from the center to the side of drivetrain doesn't matter since the odometry's y offset is calculated by taking the avg. of the 2 sides of the drivetrain, and the width of the drivetrain base doesn't matter
 {};
 
@@ -118,19 +114,11 @@ void Drivetrain::calibrateInertial() {
 //All inertial calculations will use the Inertial's rotation b/c rotation doesn't have limits so you can wraparound by using fmods, and since it doesn't have limits, you can always multiply by inertial scale
 
 void Drivetrain::setInertialHeading(double heading) {
-<<<<<<< Updated upstream
     Inertial.setRotation(heading / (360 / this->inertialScale), degrees);
 };
 
 double Drivetrain::getInertialHeading() {
     return fmod(fmod(Inertial.rotation(degrees) * (360 / this->inertialScale), 360) + 360, 360); //the wraparound function
-=======
-    Inertial.setRotation(heading / (360 / inertialScale), degrees);
-};
-
-double Drivetrain::getInertialHeading() {
-    return fmod(fmod(Inertial.rotation(degrees) * (360 / inertialScale), 360) + 360, 360); //the wraparound function
->>>>>>> Stashed changes
 };
 
 void Drivetrain::resetHorizontalTrackerPosition() {
@@ -145,11 +133,7 @@ void Drivetrain::resetVerticalTrackerPosition() {
         RightDrive.resetPosition();
     }
 
-<<<<<<< Updated upstream
     else if(this->odometryType == TwoTrackerOdometry) { //use else if for enums
-=======
-    else if(odometryType == TwoTrackerOdometry) { //use else if for enums
->>>>>>> Stashed changes
         VerticalTracker.resetPosition();
     }
 }
@@ -182,11 +166,7 @@ void Drivetrain::setCoordinates(double initialXCoordinate, double initialYCoordi
     this->resetHorizontalTrackerPosition();
     this->resetVerticalTrackerPosition();
     this->setInertialHeading(initialGlobalOrientation);
-<<<<<<< Updated upstream
     this->odometry.setPosition(initialXCoordinate, initialYCoordinate, initialGlobalOrientation);
-=======
-    odometry.setPosition(initialXCoordinate, initialYCoordinate, initialGlobalOrientation);
->>>>>>> Stashed changes
 
     positionTrackingTask = task(Drivetrain::trackPositionStatic, this); //tells the task that the trackPositionStatic is part of the Drivetrain class not some other class
                                                                         //", this" tells it which object in the drivetrain class to run the task on (on this one)
@@ -212,22 +192,16 @@ int Drivetrain::trackPosition() {
 void Drivetrain::driveDistance(double targetDistance, bool exit) {
     double initialHeading = odometry.globalOrientation; //for bearing PID
 
-<<<<<<< Updated upstream
     double headingDelta = 0;
 
     double initialX = odometry.xCoordinate; //needed b/c driveDistance is relative to your starting position
     double initialY = odometry.yCoordinate; //needed b/c driveDistance is relave to your starting position
-=======
-    double previousX = odometry.xCoordinate; //needed b/c driveDistance is relative to your starting position
-    double previousY = odometry.yCoordinate; //needed b/c driveDistance is relave to your starting position
->>>>>>> Stashed changes
 
     double xDelta = 0; //initializes the change in global x-coordinate between previous and current loop
     double yDelta = 0; //initializes the change in global y-coordinate between previous and current loop
 
     double distanceTraveled = 0; //initializes the total distance traveled
 
-<<<<<<< Updated upstream
     this->drivePID.setError(targetDistance);
     this->drivePID.setOutputConstants(driveOutputConstants.kp, driveOutputConstants.ki, driveOutputConstants.kd);
     this->drivePID.setLogicConstants(driveLogicConstants.startIntegral);
@@ -264,10 +238,6 @@ void Drivetrain::driveDistance(double targetDistance, bool exit) {
     this->bearingPID.setMotorOutput(0);
     this->bearingPID.setCounter(0);
     this->bearingPID.setPrevMotorOutput(0);
-=======
-    PID drivePID(targetDistance, driveDistanceOutputConstants.kp, driveDistanceOutputConstants.ki, driveDistanceOutputConstants.kd, driveDistanceLogicConstants.startIntegral, driveDistanceSettleConstants.deadband, driveDistanceSettleConstants.stallCounter, driveDistanceSettleConstants.counterLimit, exit, driveDistanceControlOutputConstants.minimumMotorOutput, driveDistanceControlOutputConstants.maximumMotorOutput, driveDistanceControlOutputConstants.accelerationSlew, driveDistanceControlOutputConstants.minDecelerationSlew, driveDistanceControlOutputConstants.maxDecelerationSlew, Decay);
-    PID bearingPID(0, bearingOutputConstants.kp, bearingOutputConstants.ki, bearingOutputConstants.kd, bearingLogicConstants.startIntegral, bearingSettleConstants.deadband, bearingSettleConstants.stallCounter, bearingSettleConstants.counterLimit, exit, bearingControlOutputConstants.minimumMotorOutput, bearingControlOutputConstants.maximumMotorOutput, bearingControlOutputConstants.accelerationSlew, bearingControlOutputConstants.minDecelerationSlew, bearingControlOutputConstants.maxDecelerationSlew, Reset);
->>>>>>> Stashed changes
 
     double driveOutput = 0;
     double bearingOutput = 0;
@@ -277,17 +247,7 @@ void Drivetrain::driveDistance(double targetDistance, bool exit) {
     double rightOutput = 0;
 
     do {
-<<<<<<< Updated upstream
         headingDelta = getTurnError(this->odometry.globalOrientation, initialHeading);
-=======
-        xDelta = odometry.xCoordinate - previousX; //measures the change in global x-coordinate
-        yDelta = odometry.yCoordinate - previousY; //measures the change in global y-coordinate
-
-        distanceTraveled += xDelta * sin(degreesToRadians(odometry.globalOrientation)) + yDelta * cos(degreesToRadians(odometry.globalOrientation)); //adds on to distanceTraveled using the projection formula
-
-        drivePID.error = drivePID.startError - distanceTraveled;
-        bearingPID.error = getTurnError(odometry.globalOrientation, initialHeading);
->>>>>>> Stashed changes
 
         xDelta = this->odometry.xCoordinate - initialX ; //measures the change in global x-coordinate
         yDelta = this->odometry.yCoordinate - initialY; //measures the change in global y-coordinate
@@ -315,16 +275,8 @@ void Drivetrain::driveDistance(double targetDistance, bool exit) {
         LeftDrive.spin(forward, leftOutput, voltageUnits::volt);
         RightDrive.spin(forward, rightOutput, voltageUnits::volt);
 
-<<<<<<< Updated upstream
         vex::wait(20, msec);
     } while(exit ? !this->drivePID.settled() : std::abs(this->drivePID.error) > this->drivePID.deadband);
-=======
-        previousX = odometry.xCoordinate;
-        previousY = odometry.yCoordinate;
-
-        vex::wait(20, msec);
-    } while(!drivePID.settled());
->>>>>>> Stashed changes
     
     std::cout << "DrivePID is done!" << std::endl;
 
@@ -346,7 +298,6 @@ void Drivetrain::driveDistance(double targetDistance, bool exit) {
 };
 
 void Drivetrain::driveToPoint(double finalX, double finalY, bool exit) {
-<<<<<<< Updated upstream
     double targetDistance = hypot((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate));
     double targetHeading = fmod(radiansToDegrees(atan2((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate))) + 360, 360); //wraps the heading to [0, 360), which is necessary b/c atan2 returns a value in the ragne [-pi, pi), this is the heading facing the target
                                                                                                                                                    //atan is flipped b/c in normal coordinate systems, 0 degrees faces +X, but for our robot, 0 degrees faces +Y
@@ -406,20 +357,6 @@ void Drivetrain::driveToPoint(double finalX, double finalY, bool exit) {
     }
 
     bool locked = false;
-=======
-    bool reversed = false;
-
-    double targetDistance = hypot((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate));
-    double targetHeading = fmod(radiansToDegrees(atan2((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate))) + 360, 360); //wraps the heading to [0, 360), which is necessary b/c atan2 returns a value in the ragne [-pi, pi), this is the heading facing the target
-                                                                                                                                                   //atan is flipped b/c in normal coordinate systems, 0 degrees faces +X, but for our robot, 0 degrees faces +Y
-    if(std::abs(getTurnError(odometry.globalOrientation, targetHeading)) > 90) {
-        targetHeading = fmod((targetHeading + 180), 360); //makes |error| <= 90 b/c it treats the back of the robot as the front
-        reversed = true;
-    }
-
-    PID drivePID(targetDistance, driveDistanceOutputConstants.kp, driveDistanceOutputConstants.ki, driveDistanceOutputConstants.kd, driveDistanceLogicConstants.startIntegral, driveDistanceSettleConstants.deadband, driveDistanceSettleConstants.stallCounter, driveDistanceSettleConstants.counterLimit, exit, driveDistanceControlOutputConstants.minimumMotorOutput, driveDistanceControlOutputConstants.maximumMotorOutput, driveDistanceControlOutputConstants.accelerationSlew, driveDistanceControlOutputConstants.minDecelerationSlew, driveDistanceControlOutputConstants.maxDecelerationSlew, Decay);
-    PID driveTurnPID(targetHeading, driveTurnOutputConstants.kp, driveTurnOutputConstants.ki, driveTurnOutputConstants.kd, driveTurnLogicConstants.startIntegral, driveTurnSettleConstants.deadband, driveTurnSettleConstants.stallCounter, driveTurnSettleConstants.counterLimit, exit, driveTurnControlOutputConstants.minimumMotorOutput, driveTurnControlOutputConstants.maximumMotorOutput, driveTurnControlOutputConstants.accelerationSlew, driveTurnControlOutputConstants.minDecelerationSlew, driveTurnControlOutputConstants.maxDecelerationSlew, Reset);
->>>>>>> Stashed changes
 
     double driveOutput = 0;
     double driveTurnOutput = 0;
@@ -428,89 +365,14 @@ void Drivetrain::driveToPoint(double finalX, double finalY, bool exit) {
     double leftOutput = 0;
     double rightOutput = 0;
 
-<<<<<<< Updated upstream
     do {
         this->drivePID.error = hypot((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate));
         targetHeading = fmod(radiansToDegrees(atan2((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate))) + 360, 360); //updates the heading facing the target
         this->driveTurnPID.error = getTurnError(this->odometry.globalOrientation, targetHeading);
-=======
-    do {
-        drivePID.error = hypot((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate));
-        if(drivePID.error > drivePID.deadband) {
-            targetHeading = fmod(radiansToDegrees(atan2((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate))) + 360, 360); //updates the heading facing the target
-            driveTurnPID.error = getTurnError(odometry.globalOrientation, targetHeading);
-        }
-
-        driveOutput = drivePID.output() * cos(degreesToRadians(driveTurnPID.error));
-
-        if(drivePID.error > drivePID.deadband) {
-            if(std::abs(getTurnError(odometry.globalOrientation, targetHeading)) > 90) { //checks if the absolute value heading delta of the heading delta is greater than 90, meaning the target is behind the robot
-                driveTurnPID.error = getTurnError(odometry.globalOrientation, fmod((targetHeading + 180), 360)); //makes |error| <= 90 b/c it treats the back of the robot as the front
-            }
-        }
-
-        driveTurnOutput = drivePID.error > drivePID.deadband ? driveTurnPID.output() : 0;
-
-        leftOutput = percentToVolt(driveOutput + driveTurnOutput);
-        rightOutput = percentToVolt(driveOutput - driveTurnOutput);
-
-        if(this->leftVelocity < this->rightVelocity) {
-            rightOutput *= this->leftVelocity / this->rightVelocity;
-        }
-
-        if(this->rightVelocity < this->leftVelocity) {
-            leftOutput *= this->rightVelocity / this->leftVelocity;
-        }
-
-        LeftDrive.spin(forward, leftOutput, voltageUnits::volt);
-        RightDrive.spin(forward, rightOutput, voltageUnits::volt);
-
-        vex::wait(20, msec);
-    } while(!drivePID.settled() || !driveTurnPID.settled());
-
-    std::cout << "DriveToPointPID is done!" << std::endl;
-    LeftDrive.stop(hold);
-    RightDrive.stop(hold);
-};
-
-void Drivetrain::driveDistanceTrig(double targetDistance, bool exit1, bool exit2, bool exit3) { //oh yeah Colin! Colin is the goat thx for great ideas!
-    double initialHeading = odometry.globalOrientation;
-    double headingDelta = getTurnError(initialHeading, 180);
-    driveDistance(targetDistance/(2 * cos(degreesToRadians(headingDelta))), exit1);
-    wait(20, msec);
-    turnToHeading(360 - initialHeading, exit2);
-    wait(20, msec);
-    driveDistance(targetDistance/(2 * cos(degreesToRadians(headingDelta))), exit3);    
-};
-
-//drive a straight line distance slowly
-void Drivetrain::driveDistanceSlow(double targetDistance, bool exit) {
-    PID drivePID(targetDistance, driveDistanceSlowOutputConstants.kp, driveDistanceSlowOutputConstants.ki, driveDistanceSlowOutputConstants.kd, driveDistanceSlowLogicConstants.startIntegral, driveDistanceSlowSettleConstants.deadband, driveDistanceSlowSettleConstants.stallCounter, driveDistanceSlowSettleConstants.counterLimit, exit, driveDistanceSlowControlOutputConstants.minimumMotorOutput, driveDistanceSlowControlOutputConstants.maximumMotorOutput, driveDistanceSlowControlOutputConstants.accelerationSlew, driveDistanceSlowControlOutputConstants.minDecelerationSlew, driveDistanceSlowControlOutputConstants.maxDecelerationSlew, Decay);
-    PID bearingPID(0, bearingSlowOutputConstants.kp, bearingSlowOutputConstants.ki, bearingSlowOutputConstants.kd, bearingSlowLogicConstants.startIntegral, bearingSlowSettleConstants.deadband, bearingSlowSettleConstants.stallCounter, bearingSlowSettleConstants.counterLimit, exit, bearingSlowControlOutputConstants.minimumMotorOutput, bearingSlowControlOutputConstants.maximumMotorOutput, bearingSlowControlOutputConstants.accelerationSlew, bearingSlowControlOutputConstants.minDecelerationSlew, bearingSlowControlOutputConstants.maxDecelerationSlew, Reset);
-
-    double startHeading = odometry.globalOrientation; //for bearing PID
-
-    double driveOutput = 0;
-    double bearingOutput = 0;
-
-    //left and right outputs
-    double leftOutput = 0;
-    double rightOutput = 0;
-
-    double initialPosition = this->odometry.yCoordinate;
-
-    do {
-        drivePID.error = drivePID.startError - (this->odometry.yCoordinate - initialPosition);
-        bearingPID.error = getTurnError(odometry.globalOrientation, startHeading);
-        
-        driveOutput = drivePID.output();
-        bearingOutput = bearingPID.output();
->>>>>>> Stashed changes
 
         driveOutput = this->drivePID.output() * cos(degreesToRadians(this->driveTurnPID.error)); //must calculate before recalculating driveTurnPID.error if going backward b/c that means that initial error is (90, 270), which means cosine will be negative
                                                                                      //also helps reduce forward/backward movement when heading is less correct, applies more power when facing in right direction
 
-<<<<<<< Updated upstream
         if(std::abs(getTurnError(this->odometry.globalOrientation, targetHeading)) > 90) { //checks if the absolute value heading delta of the heading delta is greater than 90, meaning the target is behind the robot
             this->driveTurnPID.error = getTurnError(this->odometry.globalOrientation, fmod((targetHeading + 180), 360)); //makes |error| <= 90 b/c it treats the back of the robot as the front
         }
@@ -533,12 +395,6 @@ void Drivetrain::driveDistanceSlow(double targetDistance, bool exit) {
             rightOutput *= this->leftVelocity / this->rightVelocity;
         }
 
-=======
-        if(this->leftVelocity < this->rightVelocity) {
-            rightOutput *= this->leftVelocity / this->rightVelocity;
-        }
-
->>>>>>> Stashed changes
         if(this->rightVelocity < this->leftVelocity) {
             leftOutput *= this->rightVelocity / this->leftVelocity;
         }
@@ -547,7 +403,6 @@ void Drivetrain::driveDistanceSlow(double targetDistance, bool exit) {
         RightDrive.spin(forward, rightOutput, voltageUnits::volt);
 
         vex::wait(20, msec);
-<<<<<<< Updated upstream
     } while(exit ? !this->drivePID.settled() : std::abs(this->drivePID.error) > this->drivePID.deadband);
 
     std::cout << "DriveToPointPID is done!" << std::endl;
@@ -567,18 +422,10 @@ void Drivetrain::driveDistanceSlow(double targetDistance, bool exit) {
 
         this->prevChaining = true;
     }
-=======
-    } while(!drivePID.settled());
-    
-    std::cout << "DrivePID is done!" << std::endl;
-    LeftDrive.stop(hold);
-    RightDrive.stop(hold);
->>>>>>> Stashed changes
 };
 
 //turn to a global heading
 void Drivetrain::turnToHeading(double targetHeading, bool exit) {
-<<<<<<< Updated upstream
     this->turnPID.setError(0);
     this->turnPID.setOutputConstants(turnOutputConstants.kp, turnOutputConstants.ki, turnOutputConstants.kd);
     this->turnPID.setLogicConstants(turnLogicConstants.startIntegral);
@@ -602,9 +449,6 @@ void Drivetrain::turnToHeading(double targetHeading, bool exit) {
         this->turnPID.setPrevError(this->prevError);
         this->turnPID.setPrevMotorOutput(this->prevMotorOutput);
     }
-=======
-    PID turnPID(targetHeading, turnToHeadingOutputConstants.kp, turnToHeadingOutputConstants.ki, turnToHeadingOutputConstants.kd, turnToHeadingLogicConstants.startIntegral, turnToHeadingSettleConstants.deadband, turnToHeadingSettleConstants.stallCounter, turnToHeadingSettleConstants.counterLimit, exit, turnToHeadingControlOutputConstants.minimumMotorOutput, turnToHeadingControlOutputConstants.maximumMotorOutput, turnToHeadingControlOutputConstants.accelerationSlew, turnToHeadingControlOutputConstants.minDecelerationSlew,turnToHeadingControlOutputConstants.maxDecelerationSlew, Decay);
->>>>>>> Stashed changes
 
     double turnOutput;
 
@@ -613,11 +457,7 @@ void Drivetrain::turnToHeading(double targetHeading, bool exit) {
     double rightOutput = 0;
 
     do {
-<<<<<<< Updated upstream
         this->turnPID.error = getTurnError(this->odometry.globalOrientation, targetHeading);
-=======
-        turnPID.error = getTurnError(odometry.globalOrientation, targetHeading);
->>>>>>> Stashed changes
 
         turnOutput = this->turnPID.output();
 
@@ -636,11 +476,7 @@ void Drivetrain::turnToHeading(double targetHeading, bool exit) {
         RightDrive.spin(reverse, rightOutput, voltageUnits::volt);
 
         vex::wait(20, msec);
-<<<<<<< Updated upstream
     } while(exit ? !this->turnPID.settled() : std::abs(this->turnPID.error) > this->turnPID.deadband);
-=======
-    } while(!turnPID.settled());
->>>>>>> Stashed changes
 
 
     std::cout << "TurnPID is done!" << std::endl;
@@ -747,40 +583,6 @@ void Drivetrain::swingToHeading(std::string Direction, double targetHeading, boo
 
         this->prevChaining = true;
     }
-};
-
-//==== AUTON MOVEMENTS ====//
-void Drivetrain::leftSpin(directionType direction, int velocity, percentUnits units) {
-    LeftDrive.spin(direction, velocity, units);
-};
-
-void Drivetrain::rightSpin(directionType direction, int velocity, percentUnits units) {
-    RightDrive.spin(direction, velocity, units);
-};
-
-void Drivetrain::stop() {
-    LeftDrive.stop();
-    RightDrive.stop();
-};
-
-void Drivetrain::oscillate(int numberOfOscillations, double speedOfOscillation, double timeOfOscillation) {
-    for(int i = 0; i < numberOfOscillations; i++) {
-        LeftDrive.spin(forward, speedOfOscillation, pct);
-        RightDrive.spin(forward, speedOfOscillation, pct);
-        wait(timeOfOscillation, msec);
-        LeftDrive.stop(hold);
-        RightDrive.stop(hold);
-        LeftDrive.spin(reverse, speedOfOscillation, pct);
-        RightDrive.spin(reverse, speedOfOscillation, pct);
-        if(i < numberOfOscillations - 1) {
-            wait(timeOfOscillation, msec);
-        }
-        LeftDrive.stop(hold);
-        RightDrive.stop(hold);
-    }
-
-    LeftDrive.stop(hold);
-    RightDrive.stop(hold);
 };
 
 //==== AUTON MOVEMENTS ====//

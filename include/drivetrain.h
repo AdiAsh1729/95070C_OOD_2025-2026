@@ -94,15 +94,9 @@ class Drivetrain {
         };
 
         typedef struct controlOutputConstants {
-<<<<<<< Updated upstream
             double prevMotorOutput; //not in PID constructor
             double minMotorOutput;
             double maxMotorOutput;
-=======
-            double previousMotorOutput; //not in PID constructor
-            double minimumMotorOutput;
-            double maximumMotorOutput;
->>>>>>> Stashed changes
             double accelerationSlew;
             double minDecelerationSlew;
             double maxDecelerationSlew;
@@ -145,38 +139,24 @@ class Drivetrain {
 
 
         //==== TURN TO HEADING CONSTANTS ====//
-<<<<<<< Updated upstream
         outputConstants turnOutputConstants;
         logicConstants turnLogicConstants;
         settleConstants turnSettleConstants;
         controlOutputConstants turnControlOutputConstants;
-=======
-        outputConstants turnToHeadingOutputConstants;
-        logicConstants turnToHeadingLogicConstants;
-        settleConstants turnToHeadingSettleConstants;
-        controlOutputConstants turnToHeadingControlOutputConstants;
->>>>>>> Stashed changes
 
 
 
         //==== PID MOVEMENTS====//
         void driveDistance(double targetDistance, bool exit);
         void driveToPoint(double xCoordinate, double yCoordinate, bool exit);
-<<<<<<< Updated upstream
-=======
-        void driveDistanceTrig(double targetDistance, bool exit1, bool exit2, bool exit3);
->>>>>>> Stashed changes
 
         void driveDistanceSlow(double targetDistance, bool exit);
         void driveToPointSlow(double finalX, double finalY, bool exit);
 
         void turnToHeading(double targetHeading, bool exit);
         void turnToPoint(double finalX, double finalY, bool exit);
-<<<<<<< Updated upstream
         void swingToHeading(std::string Direction, double targetHeading, bool exit);
         void swingToPoint(double finalX, double finalY, bool exit);
-=======
->>>>>>> Stashed changes
 
         void oscillate(int numberOfOscillations, double speedOfOscillation, double timeOfOscillation); //moves the drivetrain forward and backward for matchloading
 

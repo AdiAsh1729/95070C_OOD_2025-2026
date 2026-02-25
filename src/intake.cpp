@@ -12,10 +12,7 @@ Intake::Intake(Custom_Controller& Controller, motor& Intake1, motor& Intake2, mo
     IntakeGroup(IntakeGroup),
     Descore(Descore),
     Matchloader(Matchloader),
-    MiddleGoal(MiddleGoal),
-    descorePressed(0),
-    matchloaderPressed(0),
-    middleGoalPressed(0)
+    MiddleGoal(MiddleGoal)
 {};
 
 //==== Driver Control ====//
@@ -134,7 +131,6 @@ void Intake::stopGroup() {
     IntakeGroup.stop();
 };
 
-<<<<<<< Updated upstream
 void Intake::intakeStore(double speed1, double speed2) {
     MiddleGoal.set(false);
 
@@ -154,16 +150,6 @@ void Intake::scoreMiddle(double speed1, double speed2) {
 
     Intake1.spin(forward, speed1, voltageUnits::volt);
     Intake2.spin(forward, speed2, voltageUnits::volt);
-=======
-void Intake::scoreLong(double speed1, double speed2) {
-    Intake1.spin(forward, speed1, pct);
-    Intake2.spin(reverse, speed2, pct);
-};
-
-void Intake::scoreMiddle(double speed1, double speed2) {
-    Intake1.spin(forward, speed1, pct);
-    Intake2.spin(forward, speed2, pct);
->>>>>>> Stashed changes
 };
 
 void Intake::oscillate(int numberOfOscillations, double speedOfOscillation, double timeOfOscillation) {
