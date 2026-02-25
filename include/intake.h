@@ -15,10 +15,6 @@ class Intake {
         digital_out& Descore;
         digital_out& Matchloader;
         digital_out& MiddleGoal;
-        
-        int descorePressed;
-        int matchloaderPressed;
-        int middleGoalPressed;
 
     public:
         Intake(Custom_Controller& Controller, motor& Intake1, motor& Intake2, motor_group& IntakeGroup, digital_out& Descore, digital_out& Matchloader, digital_out& MiddleGoal);

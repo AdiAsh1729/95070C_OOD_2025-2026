@@ -9,6 +9,16 @@
 #define HORIZONTAL_TO_CENTER_DISTANCE 0 //0.375 //IDK if this is accurate
 #define VERTICAL_TO_CENTER_DISTANCE 0 //dummy
 
+enum Auton {
+    Null,
+    RunRightQual,
+    RunLeftQual,
+    RunRightElim,
+    RunLeftElim,
+    RunSoloAWP,
+    RunAutonSkills
+};
+
 enum Button {
     A,
     B,
@@ -24,27 +34,6 @@ enum Button {
     L2
 };
 
-enum OdometryType {
-    ZeroTrackerOdometry,
-    OneTrackerOdometry,
-    TwoTrackerOdometry
-};
-
-enum IntegralMethod {
-    Decay,
-    Reset
-};
-
-enum Auton {
-    Null,
-    RunRightQual,
-    RunLeftQual,
-    RunRightElim,
-    RunLeftElim,
-    RunSoloAWP,
-    RunAutonSkills
-};
-
 enum Driver {
     Nikhil,
     Thomas,
@@ -52,3 +41,21 @@ enum Driver {
     Noob
 };
 
+enum OdometryType {
+    ZeroTrackerOdometry,
+    OneTrackerOdometry,
+    TwoTrackerOdometry
+};
+
+enum PIDType {
+    Drive,
+    Bearing,
+    DriveTurn,
+    Turn,
+    Swing
+};
+
+enum IntegralMethod {
+    Decay,
+    Reset
+};

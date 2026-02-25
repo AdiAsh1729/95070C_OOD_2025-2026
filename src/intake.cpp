@@ -12,10 +12,7 @@ Intake::Intake(Custom_Controller& Controller, motor& Intake1, motor& Intake2, mo
     IntakeGroup(IntakeGroup),
     Descore(Descore),
     Matchloader(Matchloader),
-    MiddleGoal(MiddleGoal),
-    descorePressed(0),
-    matchloaderPressed(0),
-    middleGoalPressed(0)
+    MiddleGoal(MiddleGoal)
 {};
 
 //==== Driver Control ====//

@@ -414,21 +414,21 @@ void Robot::setPIDConstants() {
     //note that lowering the P value in PID functions basically increases the amount of distance the PID gets to decelerate
 
     //==== Drive Distance Constants ====//
-    chassis.driveDistanceOutputConstants.kp = 9;
-    chassis.driveDistanceOutputConstants.ki = 0;
-    chassis.driveDistanceOutputConstants.kd = 0.6;
+    chassis.driveOutputConstants.kp = 9;
+    chassis.driveOutputConstants.ki = 0;
+    chassis.driveOutputConstants.kd = 0.6;
 
-    chassis.driveDistanceLogicConstants.startIntegral = 10;
+    chassis.driveLogicConstants.startIntegral = 10;
 
-    chassis.driveDistanceSettleConstants.deadband = 0.5;
-    chassis.driveDistanceSettleConstants.stallCounter = 0.1;
-    chassis.driveDistanceSettleConstants.counterLimit = 25;
+    chassis.driveSettleConstants.deadband = 0.5;
+    chassis.driveSettleConstants.stallCounter = 0.1;
+    chassis.driveSettleConstants.counterLimit = 25;
 
-    chassis.driveDistanceControlOutputConstants.minimumMotorOutput = 0; 
-    chassis.driveDistanceControlOutputConstants.maximumMotorOutput = 99.9;
-    chassis.driveDistanceControlOutputConstants.accelerationSlew = 99.9; //might have to tune this
-    chassis.driveDistanceControlOutputConstants.minDecelerationSlew = 0; //might have to tune this
-    chassis.driveDistanceControlOutputConstants.maxDecelerationSlew = 99.9; //might have to tune this
+    chassis.driveControlOutputConstants.minMotorOutput = 0; 
+    chassis.driveControlOutputConstants.maxMotorOutput = 99.9;
+    chassis.driveControlOutputConstants.accelerationSlew = 99.9; //might have to tune this
+    chassis.driveControlOutputConstants.minDecelerationSlew = 0; //might have to tune this
+    chassis.driveControlOutputConstants.maxDecelerationSlew = 99.9; //might have to tune this
 
 
     //used for keeping bearing when using driveDistance
@@ -442,8 +442,8 @@ void Robot::setPIDConstants() {
     chassis.bearingSettleConstants.stallCounter = 0;
     chassis.bearingSettleConstants.counterLimit = 0;
 
-    chassis.bearingControlOutputConstants.minimumMotorOutput = 0;
-    chassis.bearingControlOutputConstants.maximumMotorOutput = 99.9;
+    chassis.bearingControlOutputConstants.minMotorOutput = 0;
+    chassis.bearingControlOutputConstants.maxMotorOutput = 99.9;
     chassis.bearingControlOutputConstants.accelerationSlew = 99.9;
     chassis.bearingControlOutputConstants.minDecelerationSlew = 0;
     chassis.bearingControlOutputConstants.maxDecelerationSlew = 99.9;
@@ -459,29 +459,29 @@ void Robot::setPIDConstants() {
     chassis.driveTurnSettleConstants.stallCounter = 0;
     chassis.driveTurnSettleConstants.counterLimit = 0;
 
-    chassis.driveTurnControlOutputConstants.minimumMotorOutput = 7.7;
-    chassis.driveTurnControlOutputConstants.maximumMotorOutput = 99.9;
+    chassis.driveTurnControlOutputConstants.minMotorOutput = 0;
+    chassis.driveTurnControlOutputConstants.maxMotorOutput = 99.9;
     chassis.driveTurnControlOutputConstants.accelerationSlew = 99.9;
     chassis.driveTurnControlOutputConstants.minDecelerationSlew = 0;
     chassis.driveTurnControlOutputConstants.maxDecelerationSlew = 99.9;
 
 
     //==== Drive Distance Slow Constants ====//
-    chassis.driveDistanceSlowOutputConstants.kp = 0;
-    chassis.driveDistanceSlowOutputConstants.ki = 0;
-    chassis.driveDistanceSlowOutputConstants.kd = 0;
+    chassis.driveSlowOutputConstants.kp = 0;
+    chassis.driveSlowOutputConstants.ki = 0;
+    chassis.driveSlowOutputConstants.kd = 0;
 
-    chassis.driveDistanceSlowLogicConstants.startIntegral = 10;
+    chassis.driveSlowLogicConstants.startIntegral = 10;
 
-    chassis.driveDistanceSlowSettleConstants.deadband = 0.25;
-    chassis.driveDistanceSlowSettleConstants.stallCounter = 0.1;
-    chassis.driveDistanceSlowSettleConstants.counterLimit = 25;
+    chassis.driveSlowSettleConstants.deadband = 0.25;
+    chassis.driveSlowSettleConstants.stallCounter = 0.1;
+    chassis.driveSlowSettleConstants.counterLimit = 25;
 
-    chassis.driveDistanceSlowControlOutputConstants.minimumMotorOutput = 7.7;
-    chassis.driveDistanceSlowControlOutputConstants.maximumMotorOutput = 99.9;
-    chassis.driveDistanceSlowControlOutputConstants.accelerationSlew = 99.9; //might have to tune this
-    chassis.driveDistanceSlowControlOutputConstants.minDecelerationSlew = 0; //might have to tune this
-    chassis.driveDistanceSlowControlOutputConstants.maxDecelerationSlew = 99.9; //might have to tune this
+    chassis.driveSlowControlOutputConstants.minMotorOutput = 0;
+    chassis.driveSlowControlOutputConstants.maxMotorOutput = 99.9;
+    chassis.driveSlowControlOutputConstants.accelerationSlew = 99.9; //might have to tune this
+    chassis.driveSlowControlOutputConstants.minDecelerationSlew = 0; //might have to tune this
+    chassis.driveSlowControlOutputConstants.maxDecelerationSlew = 99.9; //might have to tune this
 
     //used for keeping bearing when using driveDistanceSlow
     chassis.bearingSlowOutputConstants.kp = 0;
@@ -494,8 +494,8 @@ void Robot::setPIDConstants() {
     chassis.bearingSlowSettleConstants.stallCounter = 0;
     chassis.bearingSlowSettleConstants.counterLimit = 0;
 
-    chassis.bearingSlowControlOutputConstants.minimumMotorOutput = 0;
-    chassis.bearingSlowControlOutputConstants.maximumMotorOutput = 99.9;
+    chassis.bearingSlowControlOutputConstants.minMotorOutput = 0;
+    chassis.bearingSlowControlOutputConstants.maxMotorOutput = 99.9;
     chassis.bearingSlowControlOutputConstants.accelerationSlew = 99.9;
     chassis.bearingSlowControlOutputConstants.minDecelerationSlew = 0;
     chassis.bearingSlowControlOutputConstants.maxDecelerationSlew = 99.9;
@@ -511,35 +511,35 @@ void Robot::setPIDConstants() {
     chassis.driveTurnSlowSettleConstants.stallCounter = 0;
     chassis.driveTurnSlowSettleConstants.counterLimit = 0;
 
-    chassis.driveTurnSlowControlOutputConstants.minimumMotorOutput = 7.7;
-    chassis.driveTurnSlowControlOutputConstants.maximumMotorOutput = 99.9;
+    chassis.driveTurnSlowControlOutputConstants.minMotorOutput = 0;
+    chassis.driveTurnSlowControlOutputConstants.maxMotorOutput = 99.9;
     chassis.driveTurnSlowControlOutputConstants.accelerationSlew = 99.9;
     chassis.driveTurnSlowControlOutputConstants.minDecelerationSlew = 0;
     chassis.driveTurnSlowControlOutputConstants.maxDecelerationSlew = 99.9;
 
     //==== Turn To Heading Constants ====//
-    chassis.turnToHeadingOutputConstants.kp = 3.25;
-    chassis.turnToHeadingOutputConstants.ki = 0;
-    chassis.turnToHeadingOutputConstants.kd = 0.3;
+    chassis.turnOutputConstants.kp = 3.25;
+    chassis.turnOutputConstants.ki = 0;
+    chassis.turnOutputConstants.kd = 0.3;
 
-    chassis.turnToHeadingLogicConstants.startIntegral = 20;
+    chassis.turnLogicConstants.startIntegral = 20;
 
-    chassis.turnToHeadingSettleConstants.deadband = 3;
-    chassis.turnToHeadingSettleConstants.stallCounter = 0.5;
-    chassis.turnToHeadingSettleConstants.counterLimit = 25;
+    chassis.turnSettleConstants.deadband = 3;
+    chassis.turnSettleConstants.stallCounter = 0.5;
+    chassis.turnSettleConstants.counterLimit = 25;
 
-    chassis.turnToHeadingControlOutputConstants.minimumMotorOutput = 7.7;
-    chassis.turnToHeadingControlOutputConstants.maximumMotorOutput = 99.9;
-    chassis.turnToHeadingControlOutputConstants.accelerationSlew = 99.9;
-    chassis.turnToHeadingControlOutputConstants.minDecelerationSlew = 0;
-    chassis.turnToHeadingControlOutputConstants.maxDecelerationSlew = 99.9;
+    chassis.turnControlOutputConstants.minMotorOutput = 0;
+    chassis.turnControlOutputConstants.maxMotorOutput = 99.9;
+    chassis.turnControlOutputConstants.accelerationSlew = 99.9;
+    chassis.turnControlOutputConstants.minDecelerationSlew = 0;
+    chassis.turnControlOutputConstants.maxDecelerationSlew = 99.9;
 };
 
 void Robot::RightQual() {
     setPIDConstants();
     chassis.setCoordinates(0, 0, 0);
 
-    intake.intakeStore(99, 0); //start running intake
+    intake.intakeStore(12, 3); //start running intake
     //chassis.driveDistance(12, true);
     chassis.driveToPoint(0, 12, true);
     //chassis.turnToHeading(45, true);
@@ -549,24 +549,23 @@ void Robot::RightQual() {
     //chassis.driveDistance(8, true);
     chassis.driveToPoint(10.65, 22.65, true); //finish collecting 3 blocks in the L
     intake.setMatchloader(true);
-    chassis.turnToPoint(36.5, 0, true);
-    chassis.driveToPoint(36.5, 0, true); //drive to matchloader accurately
+    chassis.turnToPoint(36.25, 0, true);
+    chassis.driveToPoint(36.25, 0, true); //drive to matchloader accurately
     chassis.turnToHeading(180, true); //turn to matchloader
     wait(500, msec);
-    chassis.driveDistance(12, true); //stop right before matchloader
+    chassis.driveDistance(15, true); //go into matchloader
 
     //matchloading
-    chassis.leftSpin(forward, 40, pct);
-    chassis.rightSpin(forward, 40, pct);
-    wait(300, msec);
     chassis.leftSpin(forward, 5, pct);
     chassis.rightSpin(forward, 5, pct);
-    wait(500, msec);
+    wait(800, msec);
     intake.stopGroup();
 
     //going and scoring in long goal
     //drive back to long goal which is slightly offset from matchloader
-    chassis.driveToPoint(37.5, 16, true);
+    intake.intakeStore(0, 12);
+    chassis.driveToPoint(36.25, 15, true);
+    chassis.turnToHeading(180, true);
 
     chassis.leftSpin(reverse, 99, pct);
     chassis.rightSpin(reverse, 99, pct);
@@ -578,9 +577,9 @@ void Robot::RightQual() {
     chassis.stop();
     chassis.driveDistance(8, true);
     chassis.turnToHeading(90, true);
-    chassis.driveDistance(14, true);
+    chassis.driveDistance(15, true);
     chassis.setInertialHeading(90);
-    chassis.turnToHeading(180, true);
+    chassis.turnToHeading(183, true);
     chassis.driveDistance(-24, true); //push into control
 };
 
@@ -593,7 +592,53 @@ void Robot::LeftQual() {
     //    wait(100, msec);
     //}
 
-    chassis.driveToPoint(24, 24, true);
+    intake.intakeStore(12, 3); //start running intake
+    //chassis.driveDistance(12, true);
+    chassis.driveToPoint(0, 12, true);
+    //chassis.turnToHeading(45, true);
+    chassis.turnToPoint(-5, 17, true);
+    //chassis.driveDistance(7, true);
+    chassis.driveToPoint(-5, 17, true);  //collect first 1-2 blocks
+    //chassis.driveDistance(8, true);
+    chassis.driveToPoint(-10.65, 22.65, true); //finish collecting 3 blocks in the L
+    chassis.turnToHeading(220, true);
+    chassis.driveToPoint(-3.5, 42, true);
+    chassis.turnToHeading(220, true);
+    intake.scoreMiddle(99, 99);
+    wait(10000, sec);
+    intake.setMatchloader(true);
+    chassis.turnToPoint(-36.25, 0, true);
+    chassis.driveToPoint(-36.25, 0, true); //drive to matchloader accurately
+    chassis.turnToHeading(180, true); //turn to matchloader
+    wait(500, msec);
+    chassis.driveDistance(15, true); //go into matchloader
+
+    //matchloading
+    chassis.leftSpin(forward, 5, pct);
+    chassis.rightSpin(forward, 5, pct);
+    wait(800, msec);
+    intake.stopGroup();
+
+    //going and scoring in long goal
+    //drive back to long goal which is slightly offset from matchloader
+    intake.intakeStore(0, 12);
+    chassis.driveToPoint(36.25, 15, true);
+    chassis.turnToHeading(180, true);
+
+    chassis.leftSpin(reverse, 99, pct);
+    chassis.rightSpin(reverse, 99, pct);
+    wait(100, msec);
+    intake.setMatchloader(false); //put matchloader up
+    intake.scoreLong(12, 12); //score in long goal
+    wait(3000, msec);
+    intake.stopGroup();
+    chassis.stop();
+    chassis.driveDistance(8, true);
+    chassis.turnToHeading(90, true);
+    chassis.driveDistance(15, true);
+    chassis.setInertialHeading(90);
+    chassis.turnToHeading(183, true);
+    chassis.driveDistance(-24, true); //push into control
 };
 
 void Robot::RightElim() {
@@ -609,7 +654,35 @@ void Robot::SoloAWP() {
 };
 
 void Robot::AutonSkills() {
+    setPIDConstants();
+    chassis.setCoordinates(0, 0, 90);
 
+    intake.intakeStore(99, 0);
+    intake.setMatchloader(true);
+    chassis.driveToPoint(33, 0, true);
+    chassis.turnToHeading(180, true);
+    chassis.driveDistance(15, true);
+    chassis.oscillate(3, 10, 300);
+    chassis.leftSpin(forward, 5, pct);
+    chassis.rightSpin(forward, 5, pct);
+    wait(3000, msec);
+
+    chassis.driveDistance(-8, true);
+    intake.setMatchloader(false);
+    chassis.turnToHeading(90, true);
+    chassis.driveDistance(15, true);
+    chassis.setInertialHeading(90);
+    chassis.driveDistance(-4, true);
+    chassis.turnToHeading(0, true);
+    chassis.driveToPoint(47, 80, true);
+
+    chassis.driveToPoint(34, 85, true);
+    chassis.turnToHeading(0, true);
+    chassis.leftSpin(reverse, 99, pct);
+    chassis.rightSpin(reverse, 99, pct);
+    intake.scoreLong(99, 99);
+    wait(1000, msec);
+    intake.oscillate(2, 99, 100);
 };
 
 void Robot::autonomous() {

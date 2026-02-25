@@ -31,10 +31,23 @@ class Drivetrain {
 
         OdometryType odometryType;
 
-        bool previousChaining; //checks if previous move was chaining
-        double previousDirection; //which direction LeftDrive moved, 1 if forward, -1 if reverse
+        //==== Global PIDs ====//
+        PID drivePID;
+        PID bearingPID;
+        PID driveTurnPID;
+        PID turnPID;
+        PID swingPID;
 
-        //Trampoline method setup
+        //==== Chaining ====//
+        PIDType prevPIDType;
+
+        bool prevChaining; //checks if previous move was chaining
+        double prevDirection; //which direction LeftDrive moved, 1 if forward, -1 if reverse
+        double prevError; //needed for smooth derivative calculation
+        double prevIntegral; //previous motion's integral
+        double prevMotorOutput; //previous motion's motor output
+
+        //==== Trampoline Method Setup ====//
         static int trackPositionStatic(void* instance); //the actual static function that is passed into the task positionTrackingTask
         int trackPosition(); //makes trackPosition a local function that can access odometry, Inertial, etc., removing the need for extern
         
@@ -68,7 +81,7 @@ class Drivetrain {
             double error; //not in PID constructor
             double startIntegral;
             double integral; //not in PID constructor
-            double previousError; //not in PID constructor
+            double prevError; //not in PID constructor
             double derivative; //not in PID constructor
         };
 
@@ -81,19 +94,19 @@ class Drivetrain {
         };
 
         typedef struct controlOutputConstants {
-            double previousMotorOutput; //not in PID constructor
-            double minimumMotorOutput;
-            double maximumMotorOutput;
+            double prevMotorOutput; //not in PID constructor
+            double minMotorOutput;
+            double maxMotorOutput;
             double accelerationSlew;
             double minDecelerationSlew;
             double maxDecelerationSlew;
         };
 
         //==== DRIVE DISTANCE CONSTANTS ====//
-        outputConstants driveDistanceOutputConstants;
-        logicConstants driveDistanceLogicConstants;
-        settleConstants driveDistanceSettleConstants;
-        controlOutputConstants driveDistanceControlOutputConstants;
+        outputConstants driveOutputConstants;
+        logicConstants driveLogicConstants;
+        settleConstants driveSettleConstants;
+        controlOutputConstants driveControlOutputConstants;
 
         outputConstants bearingOutputConstants;
         logicConstants bearingLogicConstants;
@@ -108,10 +121,10 @@ class Drivetrain {
 
 
         //==== DRIVE DISTANCE SLOW CONSTANTS ====// 
-        outputConstants driveDistanceSlowOutputConstants;
-        logicConstants driveDistanceSlowLogicConstants;
-        settleConstants driveDistanceSlowSettleConstants;
-        controlOutputConstants driveDistanceSlowControlOutputConstants;
+        outputConstants driveSlowOutputConstants;
+        logicConstants driveSlowLogicConstants;
+        settleConstants driveSlowSettleConstants;
+        controlOutputConstants driveSlowControlOutputConstants;
 
         outputConstants bearingSlowOutputConstants;
         logicConstants bearingSlowLogicConstants;
@@ -126,10 +139,10 @@ class Drivetrain {
 
 
         //==== TURN TO HEADING CONSTANTS ====//
-        outputConstants turnToHeadingOutputConstants;
-        logicConstants turnToHeadingLogicConstants;
-        settleConstants turnToHeadingSettleConstants;
-        controlOutputConstants turnToHeadingControlOutputConstants;
+        outputConstants turnOutputConstants;
+        logicConstants turnLogicConstants;
+        settleConstants turnSettleConstants;
+        controlOutputConstants turnControlOutputConstants;
 
 
 
@@ -142,6 +155,8 @@ class Drivetrain {
 
         void turnToHeading(double targetHeading, bool exit);
         void turnToPoint(double finalX, double finalY, bool exit);
+        void swingToHeading(std::string Direction, double targetHeading, bool exit);
+        void swingToPoint(double finalX, double finalY, bool exit);
 
         void oscillate(int numberOfOscillations, double speedOfOscillation, double timeOfOscillation); //moves the drivetrain forward and backward for matchloading
 
