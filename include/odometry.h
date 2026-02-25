@@ -7,9 +7,15 @@ class Odometry {
     private:
         double horizontalToCenterDistance; //in inches
         double verticalToCenterDistance; //in inches
+<<<<<<< Updated upstream
         double prevHorizontalTrackerPosition; //in inches
         double prevVerticalTrackerPosition; //in inches
         double prevGlobalOrientationRadians; //in degrees
+=======
+        double previousHorizontalTrackerPosition; //in inches
+        double previousVerticalTrackerPosition; //in inches
+        double previousGlobalOrientationRadians; //in degrees
+>>>>>>> Stashed changes
 
     public:
         Odometry(double horizontalToCenterDistance, double verticalToCenterDistance);

@@ -1,6 +1,10 @@
 #include "pid.h"
 
+<<<<<<< Updated upstream
 PID::PID(double startError, double kp, double ki, double kd, double startIntegral, double deadband, double stallCounter, double counterLimit, double minMotorOutput, double maxMotorOutput, double accelerationSlew, double minDecelerationSlew, double maxDecelerationSlew, IntegralMethod integralMethod):
+=======
+PID::PID(double startError, double kp, double ki, double kd, double startIntegral, double deadband, double stallCounter, double counterLimit, bool exit, double minimumMotorOutput, double maximumMotorOutput, double accelerationSlew, double minDecelerationSlew, double maxDecelerationSlew, IntegralMethod integralMethod):
+>>>>>>> Stashed changes
     startError(startError),
 
     kp(kp),
@@ -18,10 +22,17 @@ PID::PID(double startError, double kp, double ki, double kd, double startIntegra
     stallCounter(stallCounter),
     counterLimit(counterLimit),
     counter(0),
+    exit(exit),
     
+<<<<<<< Updated upstream
     prevMotorOutput(0),
     minMotorOutput(minMotorOutput),
     maxMotorOutput(maxMotorOutput),
+=======
+    previousMotorOutput(0),
+    minimumMotorOutput(minimumMotorOutput),
+    maximumMotorOutput(maximumMotorOutput),
+>>>>>>> Stashed changes
     accelerationSlew(accelerationSlew),
     minDecelerationSlew(minDecelerationSlew),
     maxDecelerationSlew(maxDecelerationSlew),
@@ -109,6 +120,7 @@ double PID::output() {
     this->motorOutput = this->error * this->kp + this->integral * this->ki + this->derivative * this->kd;
 
     //==== Slew Rate Controllers ====//
+<<<<<<< Updated upstream
     if(std::abs(this->motorOutput) > std::abs(prevMotorOutput) && getSign(this->motorOutput) == getSign(this->prevMotorOutput)) { //slew controller for acceleration if not crossed target
         if(std::abs(this->motorOutput - this->prevMotorOutput) > accelerationSlew) {
             this->motorOutput = this->prevMotorOutput + getSign(this->motorOutput) * accelerationSlew;
@@ -122,17 +134,40 @@ double PID::output() {
 
         if(getSign(this->motorOutput) * (this->prevMotorOutput - this->motorOutput) > this->maxDecelerationSlew) {
             this->motorOutput = this->prevMotorOutput - maxDecelerationSlew * getSign(this->motorOutput);
+=======
+    if(std::abs(this->motorOutput) > std::abs(previousMotorOutput) && getSign(this->motorOutput) == getSign(this->previousMotorOutput)) { //slew controller for acceleration if not crossed target
+        if(std::abs(this->motorOutput - this->previousMotorOutput) > accelerationSlew) {
+            this->motorOutput = this->previousMotorOutput + getSign(this->motorOutput) * accelerationSlew;
+        }
+    }
+
+    if(std::abs(this->motorOutput) < std::abs(this->previousMotorOutput) && getSign(this->motorOutput) == getSign(this->previousMotorOutput)) { //slew controller for deceleration if not crossed target
+        if(std::abs(this->previousMotorOutput - this->motorOutput) < this->minDecelerationSlew) {
+            this->motorOutput = this->previousMotorOutput - minDecelerationSlew * getSign(this->motorOutput);
+        }
+
+        if(getSign(this->motorOutput) * (this->previousMotorOutput - this->motorOutput) > this->maxDecelerationSlew) {
+            this->motorOutput = this->previousMotorOutput - maxDecelerationSlew * getSign(this->motorOutput);
+>>>>>>> Stashed changes
         }
     }
     
     //==== Clamper ====//
     if(this->motorOutput != 0) { //clamps if not first move and if not applying deceleration slew after crossing target
+<<<<<<< Updated upstream
         this->motorOutput = clamp(this->motorOutput, this->minMotorOutput, this->maxMotorOutput); //clamps the motor output between the minimum and maximum values
+=======
+        this->motorOutput = clamp(this->motorOutput, this->minimumMotorOutput, this->maximumMotorOutput); //clamps the motor output between the minimum and maximum values
+>>>>>>> Stashed changes
     }
 
     //==== Stall Check ====//
     if(this->motorOutput != 0) {
+<<<<<<< Updated upstream
         if(std::abs(this->error - this->prevError) < this->stallCounter) {
+=======
+        if(std::abs(this->error - this->previousError) < this->stallCounter) {
+>>>>>>> Stashed changes
             this->counter++;
         }
     }
@@ -141,9 +176,15 @@ double PID::output() {
         this->counter = 0;
     }
 
+<<<<<<< Updated upstream
     //==== Updates prev Values ====//
     this->prevMotorOutput = this->motorOutput;
     this->prevError = this->error;
+=======
+    //==== Updates Previous Values ====//
+    this->previousMotorOutput = this->motorOutput;
+    this->previousError = this->error;
+>>>>>>> Stashed changes
 
     return this->motorOutput;
 };

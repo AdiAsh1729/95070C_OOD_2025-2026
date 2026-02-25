@@ -15,6 +15,13 @@ class Intake {
         digital_out& Descore;
         digital_out& Matchloader;
         digital_out& MiddleGoal;
+<<<<<<< Updated upstream
+=======
+        
+        int descorePressed;
+        int matchloaderPressed;
+        int middleGoalPressed;
+>>>>>>> Stashed changes
 
     public:
         Intake(Custom_Controller& Controller, motor& Intake1, motor& Intake2, motor_group& IntakeGroup, digital_out& Descore, digital_out& Matchloader, digital_out& MiddleGoal);
@@ -44,7 +51,10 @@ class Intake {
         void stop2();
         void stopGroup();
 
+<<<<<<< Updated upstream
         void intakeStore(double speed1, double speed2);
+=======
+>>>>>>> Stashed changes
         void scoreLong(double speed1, double speed2);
         void scoreMiddle(double speed1, double spee2);
 
