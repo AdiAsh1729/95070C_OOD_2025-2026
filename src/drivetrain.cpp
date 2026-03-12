@@ -916,6 +916,40 @@ void Drivetrain::oscillate(int numberOfOscillations, double speedOfOscillation, 
     RightDrive.stop(hold);
 };
 
+//==== AUTON MOVEMENTS ====//
+void Drivetrain::leftSpin(directionType direction, int velocity, percentUnits units) {
+    LeftDrive.spin(direction, velocity, units);
+};
+
+void Drivetrain::rightSpin(directionType direction, int velocity, percentUnits units) {
+    RightDrive.spin(direction, velocity, units);
+};
+
+void Drivetrain::stop() {
+    LeftDrive.stop();
+    RightDrive.stop();
+};
+
+void Drivetrain::oscillate(int numberOfOscillations, double speedOfOscillation, double timeOfOscillation) {
+    for(int i = 0; i < numberOfOscillations; i++) {
+        LeftDrive.spin(forward, speedOfOscillation, pct);
+        RightDrive.spin(forward, speedOfOscillation, pct);
+        wait(timeOfOscillation, msec);
+        LeftDrive.stop(hold);
+        RightDrive.stop(hold);
+        LeftDrive.spin(reverse, speedOfOscillation, pct);
+        RightDrive.spin(reverse, speedOfOscillation, pct);
+        if(i < numberOfOscillations - 1) {
+            wait(timeOfOscillation, msec);
+        }
+        LeftDrive.stop(hold);
+        RightDrive.stop(hold);
+    }
+
+    LeftDrive.stop(hold);
+    RightDrive.stop(hold);
+};
+
 //==== Driver Control Functions ====//
 void Drivetrain::runArcadeDrive(Button SlowButtonID, double scaleDriveSpeed, double scaleTurnSpeed) {
     const controller::button SlowButton = Controller.getButton(SlowButtonID);

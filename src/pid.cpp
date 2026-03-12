@@ -18,6 +18,7 @@ PID::PID(double startError, double kp, double ki, double kd, double startIntegra
     stallCounter(stallCounter),
     counterLimit(counterLimit),
     counter(0),
+    exit(exit),
     
     prevMotorOutput(0),
     minMotorOutput(minMotorOutput),
@@ -141,7 +142,7 @@ double PID::output() {
         this->counter = 0;
     }
 
-    //==== Updates prev Values ====//
+    //==== Updates Previous Values ====//
     this->prevMotorOutput = this->motorOutput;
     this->prevError = this->error;
 
