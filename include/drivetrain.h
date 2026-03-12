@@ -5,9 +5,12 @@
 #include "custom_motor.h"
 #include "odometry.h"
 #include "pid.h"
+#include "pure-pursuit.h"
 #include "type_defines.h"
 #include "util.h"
+
 #include <iostream>
+
 using namespace vex;
 
 class Drivetrain {
@@ -147,6 +150,7 @@ class Drivetrain {
 
 
         //==== PID MOVEMENTS====//
+        void driveDistanceEncoder(double targetDistance, bool exit);
         void driveDistance(double targetDistance, bool exit);
         void driveToPoint(double xCoordinate, double yCoordinate, bool exit);
 
@@ -158,12 +162,17 @@ class Drivetrain {
         void swingToHeading(std::string Direction, double targetHeading, bool exit);
         void swingToPoint(double finalX, double finalY, bool exit);
 
-        void oscillate(int numberOfOscillations, double speedOfOscillation, double timeOfOscillation); //moves the drivetrain forward and backward for matchloading
+        void moveToPose(double finalX, double finalY, double finalHeading, bool exit);
+
+        //==== Pure Pursuit ====//
+        void followPath(PurePursuit& pathToFollow, double targetSpeed);
 
         //==== AUTON MOVEMENTS ====//
         void leftSpin(directionType direction, int velocity, percentUnits units);
         void rightSpin(directionType direction, int velocity, percentUnits units);
         void stop();
+
+        void oscillate(int numberOfOscillations, double speedOfOscillation, double timeOfOscillation); //moves the drivetrain forward and backward for matchloading
 
         //==== DRIVER CONTROL ====//
         void runArcadeDrive(Button SlowButtonID, double scaleDriveSpeed, double scaleTurnSpeed);

@@ -2,6 +2,7 @@
 
 #include "type_defines.h"
 #include "util.h"
+
 #include <cmath>
 #include <iostream>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#define INERTIAL_SCALE 358.05
+#define INERTIAL_SCALE 358.06
 #define GEAR_RATIO 0.75
 #define LEFT_VELOCITY 1
 #define RIGHT_VELOCITY 1

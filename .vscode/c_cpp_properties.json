@@ -27,12 +27,17 @@
 		{
 			"name": "Mac",
 			"includePath": [
-				"${vex_sdkIncludes}"
+				"/Applications/VEXcode V5 Text/include/**",
+				"/Applications/VEXcode V5 Text/clang/8.0.0/include/**",
+				"/Applications/VEXcode V5 Text/gcc/include/c++/4.9.3/**",
+				"/Applications/VEXcode V5 Text/gcc/include/**",
+				"${workspaceFolder}/include/**",
+				"${workspaceFolder}/src/**"
 			],
 			"compilerPath": "${vex_compilerPath}",
 			"cStandard": "gnu99",
 			"cppStandard": "gnu++11",
-			"intelliSenseMode": "macos-clang-x86"
+			"intelliSenseMode": "macos-clang-arm"
 		},
 		{
 			"name": "Linux",
