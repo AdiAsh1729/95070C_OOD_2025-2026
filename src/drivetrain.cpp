@@ -22,12 +22,6 @@ Drivetrain::Drivetrain(Custom_Controller& Controller, Custom_Motor_Group& LeftDr
     driveTurnPID(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Reset),
     turnPID(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Reset),
     swingPID(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Reset),
-    prevPIDType(Drive), //enum
-    prevChaining(false),
-    prevDirection(1),
-    prevError(0),
-    prevIntegral(0),
-    prevMotorOutput(0),
     odometry(0, 0) //class object with no default constructor
 {};
 
@@ -51,12 +45,6 @@ Drivetrain::Drivetrain(Custom_Controller& Controller, Custom_Motor_Group& LeftDr
     driveTurnPID(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Reset),
     turnPID(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Reset),
     swingPID(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Reset),
-    prevPIDType(Drive), //enum
-    prevChaining(false),
-    prevDirection(1),
-    prevError(0),
-    prevIntegral(0),
-    prevMotorOutput(0),
     odometry(horizontalToCenterDistance, 0) //distance from the center to the side of drivetrain doesn't matter since the odometry's y offset is calculated by taking the avg. of the 2 sides of the drivetrain, and the width of the drivetrain base doesn't matter
 {};
 
@@ -81,12 +69,6 @@ Drivetrain::Drivetrain(Custom_Controller& Controller, Custom_Motor_Group& LeftDr
     driveTurnPID(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Reset),
     turnPID(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Reset),
     swingPID(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Reset),
-    prevPIDType(Drive), //enum
-    prevChaining(false),
-    prevDirection(1),
-    prevError(0),
-    prevIntegral(0),
-    prevMotorOutput(0),
     odometry(horizontalToCenterDistance, verticalToCenterDistance)
 {};
 
@@ -189,119 +171,20 @@ int Drivetrain::trackPosition() {
 //==== PID Functions ====//
 
 //drive a straight line distance
-void Drivetrain::driveDistanceEncoder(double targetDistance, bool exit) {
-    double initialHeading = odometry.globalOrientation; //for bearing PID
-    double headingDelta = 0;
-
-    double initialEncoderAverage = getVerticalTrackerPositionInches(); //initial average of the left and right encoders, used to find the change in position by subtracting this value from the current average encoder value
-    double distanceTraveled = 0; //initializes the total distance traveled
-
-    this->drivePID.setError(targetDistance);
-    this->drivePID.setOutputConstants(driveOutputConstants.kp, driveOutputConstants.ki, driveOutputConstants.kd);
-    this->drivePID.setLogicConstants(driveLogicConstants.startIntegral);
-    this->drivePID.setSettleConstants(driveSettleConstants.deadband, driveSettleConstants.stallCounter, driveSettleConstants.counterLimit);
-    this->drivePID.setControlOutputConstants(driveControlOutputConstants.minMotorOutput, driveControlOutputConstants.maxMotorOutput, driveControlOutputConstants.accelerationSlew, driveControlOutputConstants.minDecelerationSlew, driveControlOutputConstants.maxDecelerationSlew);
-    this->drivePID.setIntegralMethod(Decay);
-
-    this->drivePID.setDerivative(0);
-    this->drivePID.setMotorOutput(0);
-    this->drivePID.setCounter(0);
-
-    if(!prevChaining) {
-        this->drivePID.setIntegral(0);
-        this->drivePID.setPrevError(this->drivePID.startError);
-        this->drivePID.setPrevMotorOutput(0);
-    }
-
-    else {
-        this->drivePID.setIntegral(this->prevIntegral);
-        this->drivePID.setPrevError(this->prevError);
-        this->drivePID.setPrevMotorOutput(this->prevMotorOutput);
-    }
-
-    this->bearingPID.setError(0);
-    this->bearingPID.setOutputConstants(bearingOutputConstants.kp, bearingOutputConstants.ki, bearingOutputConstants.kd);
-    this->bearingPID.setLogicConstants(bearingLogicConstants.startIntegral);
-    this->bearingPID.setSettleConstants(bearingSettleConstants.deadband, bearingSettleConstants.stallCounter, bearingSettleConstants.counterLimit);
-    this->bearingPID.setControlOutputConstants(bearingControlOutputConstants.minMotorOutput, bearingControlOutputConstants.maxMotorOutput, bearingControlOutputConstants.accelerationSlew, bearingControlOutputConstants.minDecelerationSlew, bearingControlOutputConstants.maxDecelerationSlew);
-    this->bearingPID.setIntegralMethod(Reset);
-
-    this->bearingPID.setIntegral(0);
-    this->bearingPID.setPrevError(this->bearingPID.startError);
-    this->bearingPID.setDerivative(0);
-    this->bearingPID.setMotorOutput(0);
-    this->bearingPID.setCounter(0);
-    this->bearingPID.setPrevMotorOutput(0);
-
-    double driveOutput = 0;
-    double bearingOutput = 0;
-
-    //left and right outputs
-    double leftOutput = 0;
-    double rightOutput = 0;
-
-    std::cout << odometry.xCoordinate << ", " << odometry.yCoordinate << ", " << odometry.globalOrientation << std::endl;
-
-    do {
-        headingDelta = getTurnError(this->odometry.globalOrientation, initialHeading);
-
-        distanceTraveled = getVerticalTrackerPositionInches() - initialEncoderAverage; //calculates total distance traveled using change in encoder values
-        
-        this->drivePID.error = this->drivePID.startError - distanceTraveled;
-        this->bearingPID.error = headingDelta;
-
-        driveOutput = this->drivePID.output();
-        bearingOutput = this->bearingPID.output();
-
-        leftOutput = percentToVolt(driveOutput + bearingOutput);
-        rightOutput = percentToVolt(driveOutput - bearingOutput);
-
-        if(this->leftVelocity < this->rightVelocity) {
-            rightOutput *= this->leftVelocity / this->rightVelocity;
-        }
-
-        if(this->rightVelocity < this->leftVelocity) {
-            leftOutput *= this->rightVelocity / this->leftVelocity;
-        }
-
-        LeftDrive.spin(forward, leftOutput, voltageUnits::volt);
-        RightDrive.spin(forward, rightOutput, voltageUnits::volt);
-
-        vex::wait(20, msec);
-    } while(exit ? !this->drivePID.settled() : std::abs(this->drivePID.error) > this->drivePID.deadband);
-    
-    std::cout << "DrivePID is done!" << std::endl;
-
-    if(exit) {
-        LeftDrive.stop(hold);
-        RightDrive.stop(hold);
-
-        this->prevChaining = false;
-    }
-
-    else {
-        this->prevDirection = getSign(this->drivePID.startError);
-        this->prevError = this->drivePID.error;
-        this->prevIntegral = this->drivePID.integral + this->bearingPID.integral;
-        this->prevMotorOutput = this->drivePID.motorOutput + this->bearingPID.motorOutput;
-
-        this->prevChaining = true;
-    }
-
-    std::cout << odometry.xCoordinate << ", " << odometry.yCoordinate << ", " << odometry.globalOrientation << std::endl;
-};
-
-//drive a straight line distance
-void Drivetrain::driveDistance(double targetDistance, bool exit) {
+void Drivetrain::driveDistance(double targetDistance, bool usingOdometry) {
     double initialHeading = odometry.globalOrientation; //for bearing PID
 
     double headingDelta = 0;
     
+    //if using odometry, usingOdometry == true
     double initialX = odometry.xCoordinate; //needed b/c driveDistance is relative to your starting position
     double initialY = odometry.yCoordinate; //needed b/c driveDistance is relave to your starting position
     
     double xDelta = 0; //initializes the change in global x-coordinate between previous and current loop
     double yDelta = 0; //initializes the change in global y-coordinate between previous and current loop
+
+    //if not using odometry, usingOdometry == false
+    double initialEncoderPosition = this->getVerticalTrackerPositionInches(); //initial encoder position, used if you want to exit based on encoder values instead of distance traveled
     
     double distanceTraveled = 0; //initializes the total distance traveled
 
@@ -316,17 +199,9 @@ void Drivetrain::driveDistance(double targetDistance, bool exit) {
     this->drivePID.setMotorOutput(0);
     this->drivePID.setCounter(0);
 
-    if(!prevChaining) {
-        this->drivePID.setIntegral(0);
-        this->drivePID.setPrevError(this->drivePID.startError);
-        this->drivePID.setPrevMotorOutput(0);
-    }
-
-    else {
-        this->drivePID.setIntegral(this->prevIntegral);
-        this->drivePID.setPrevError(this->prevError);
-        this->drivePID.setPrevMotorOutput(this->prevMotorOutput);
-    }
+    this->drivePID.setIntegral(0);
+    this->drivePID.setPrevError(this->drivePID.startError);
+    this->drivePID.setPrevMotorOutput(0);
 
     this->bearingPID.setError(0);
     this->bearingPID.setOutputConstants(bearingOutputConstants.kp, bearingOutputConstants.ki, bearingOutputConstants.kd);
@@ -354,11 +229,17 @@ void Drivetrain::driveDistance(double targetDistance, bool exit) {
     do {
         headingDelta = getTurnError(this->odometry.globalOrientation, initialHeading);
 
-        xDelta = this->odometry.xCoordinate - initialX ; //measures the change in global x-coordinate
-        yDelta = this->odometry.yCoordinate - initialY; //measures the change in global y-coordinate
+        if(usingOdometry) {
+            xDelta = this->odometry.xCoordinate - initialX ; //measures the change in global x-coordinate
+            yDelta = this->odometry.yCoordinate - initialY; //measures the change in global y-coordinate
 
-        distanceTraveled = xDelta * sin(degreesToRadians(initialHeading)) + yDelta * cos(degreesToRadians(initialHeading)); //adds on to distanceTraveled using the projection formula
+            distanceTraveled = xDelta * sin(degreesToRadians(initialHeading)) + yDelta * cos(degreesToRadians(initialHeading)); //adds on to distanceTraveled using the projection formula
+        }
         
+        else {
+            distanceTraveled = this->getVerticalTrackerPositionInches() - initialEncoderPosition; //measures the change in encoder position, used if you want to exit based on encoder values instead of distance traveled
+        }
+
         this->drivePID.error = this->drivePID.startError - distanceTraveled;
         this->bearingPID.error = headingDelta;
 
@@ -380,30 +261,17 @@ void Drivetrain::driveDistance(double targetDistance, bool exit) {
         RightDrive.spin(forward, rightOutput, voltageUnits::volt);
 
         vex::wait(20, msec);
-    } while(exit ? !this->drivePID.settled() : std::abs(this->drivePID.error) > this->drivePID.deadband);
+    } while(!this->drivePID.settled());
     
     std::cout << "DrivePID is done!" << std::endl;
 
-    if(exit) {
-        LeftDrive.stop(hold);
-        RightDrive.stop(hold);
-
-        this->prevChaining = false;
-    }
-
-    else {
-        this->prevDirection = getSign(this->drivePID.startError);
-        this->prevError = this->drivePID.error;
-        this->prevIntegral = this->drivePID.integral + this->bearingPID.integral;
-        this->prevMotorOutput = this->drivePID.motorOutput + this->bearingPID.motorOutput;
-
-        this->prevChaining = true;
-    }
+    LeftDrive.stop(hold);
+    RightDrive.stop(hold);
 
     std::cout << odometry.xCoordinate << ", " << odometry.yCoordinate << ", " << odometry.globalOrientation << std::endl;
 };
 
-void Drivetrain::driveToPoint(double finalX, double finalY, bool exit) {
+void Drivetrain::driveToPoint(double finalX, double finalY) {
     double targetDistance = hypot((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate));
     double targetHeading = fmod(radiansToDegrees(atan2((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate))) + 360, 360); //wraps the heading to [0, 360), which is necessary b/c atan2 returns a value in the ragne [-pi, pi), this is the heading facing the target
                                                                                                                                                    //atan is flipped b/c in normal coordinate systems, 0 degrees faces +X, but for our robot, 0 degrees faces +Y
@@ -419,17 +287,9 @@ void Drivetrain::driveToPoint(double finalX, double finalY, bool exit) {
     this->drivePID.setMotorOutput(0);
     this->drivePID.setCounter(0);
 
-    if(!prevChaining) {
-        this->drivePID.setIntegral(0);
-        this->drivePID.setPrevError(this->drivePID.startError);
-        this->drivePID.setPrevMotorOutput(0);
-    }
-
-    else {
-        this->drivePID.setIntegral(this->prevIntegral);
-        this->drivePID.setPrevError(this->prevError);
-        this->drivePID.setPrevMotorOutput(this->prevMotorOutput);
-    }
+    this->drivePID.setIntegral(0);
+    this->drivePID.setPrevError(this->drivePID.startError);
+    this->drivePID.setPrevMotorOutput(0);
 
     this->driveTurnPID.setError(0);
     this->driveTurnPID.setOutputConstants(driveTurnOutputConstants.kp, driveTurnOutputConstants.ki, driveTurnOutputConstants.kd);
@@ -442,17 +302,9 @@ void Drivetrain::driveToPoint(double finalX, double finalY, bool exit) {
     this->driveTurnPID.setMotorOutput(0);
     this->driveTurnPID.setCounter(0);
 
-    if(!prevChaining) {
-        this->driveTurnPID.setIntegral(0);
-        this->driveTurnPID.setPrevError(this->driveTurnPID.startError);
-        this->driveTurnPID.setPrevMotorOutput(0);
-    }
-
-    else {
-        this->driveTurnPID.setIntegral(this->prevIntegral);
-        this->driveTurnPID.setPrevError(this->prevError);
-        this->driveTurnPID.setPrevMotorOutput(this->prevMotorOutput);
-    }
+    this->driveTurnPID.setIntegral(0);
+    this->driveTurnPID.setPrevError(this->driveTurnPID.startError);
+    this->driveTurnPID.setPrevMotorOutput(0);
 
     if(std::abs(getTurnError(this->odometry.globalOrientation, targetHeading)) > 90) {
         this->driveTurnPID.error = getTurnError(this->odometry.globalOrientation, fmod((targetHeading + 180), 360)); //makes |error| <= 90 b/c it treats the back of the robot as the front
@@ -513,31 +365,18 @@ void Drivetrain::driveToPoint(double finalX, double finalY, bool exit) {
         RightDrive.spin(forward, rightOutput, voltageUnits::volt);
 
         vex::wait(20, msec);
-    } while(exit ? !this->drivePID.settled() : std::abs(this->drivePID.error) > this->drivePID.deadband);
+    } while(!this->drivePID.settled());
 
     std::cout << "DriveToPointPID is done!" << std::endl;
 
-    if(exit) {
-        LeftDrive.stop(hold);
-        RightDrive.stop(hold);
-
-        this->prevChaining = false;
-    }
-
-    else {
-        this->prevDirection = getSign(this->drivePID.startError);
-        this->prevError = this->drivePID.error;
-        this->prevIntegral = this->drivePID.integral + this->driveTurnPID.integral;
-        this->prevMotorOutput = this->drivePID.motorOutput + this->driveTurnPID.motorOutput;
-
-        this->prevChaining = true;
-    }
+    LeftDrive.stop(hold);
+    RightDrive.stop(hold);
 
     std::cout << odometry.xCoordinate << ", " << odometry.yCoordinate << ", " << odometry.globalOrientation << std::endl;
 };
 
 //turn to a global heading
-void Drivetrain::turnToHeading(double targetHeading, bool exit) {
+void Drivetrain::turnToHeading(double targetHeading) {
     this->turnPID.setError(0);
     this->turnPID.setOutputConstants(turnOutputConstants.kp, turnOutputConstants.ki, turnOutputConstants.kd);
     this->turnPID.setLogicConstants(turnLogicConstants.startIntegral);
@@ -550,17 +389,9 @@ void Drivetrain::turnToHeading(double targetHeading, bool exit) {
     this->turnPID.setMotorOutput(0);
     this->turnPID.setCounter(0);
 
-    if(!prevChaining) {
-        this->turnPID.setIntegral(0);
-        this->turnPID.setPrevError(this->turnPID.startError);
-        this->turnPID.setPrevMotorOutput(0);
-    }
-
-    else {
-        this->turnPID.setIntegral(this->prevIntegral);
-        this->turnPID.setPrevError(this->prevError);
-        this->turnPID.setPrevMotorOutput(this->prevMotorOutput);
-    }
+    this->turnPID.setIntegral(0);
+    this->turnPID.setPrevError(this->turnPID.startError);
+    this->turnPID.setPrevMotorOutput(0);
 
     double turnOutput;
 
@@ -590,38 +421,25 @@ void Drivetrain::turnToHeading(double targetHeading, bool exit) {
         RightDrive.spin(reverse, rightOutput, voltageUnits::volt);
 
         vex::wait(20, msec);
-    } while(exit ? !this->turnPID.settled() : std::abs(this->turnPID.error) > this->turnPID.deadband);
+    } while(!this->turnPID.settled());
 
 
     std::cout << "TurnPID is done!" << std::endl;
 
-    if(exit) {
-        LeftDrive.stop(hold);
-        RightDrive.stop(hold);
-
-        this->prevChaining = false;
-    }
-
-    else {
-        this->prevDirection = getSign(this->turnPID.startError);
-        this->prevError = this->turnPID.error;
-        this->prevIntegral = this->turnPID.integral;
-        this->prevMotorOutput = this->turnPID.motorOutput;
-
-        this->prevChaining = true;
-    }
+    LeftDrive.stop(hold);
+    RightDrive.stop(hold);
 
     std::cout << odometry.xCoordinate << ", " << odometry.yCoordinate << ", " << odometry.globalOrientation << std::endl;
 };
 
-void Drivetrain::turnToPoint(double finalX, double finalY, bool exit) {
+void Drivetrain::turnToPoint(double finalX, double finalY) {
     double targetHeading = fmod(radiansToDegrees(atan2((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate))) + 360, 360); //wraps the heading to [0, 360), which is necessary b/c atan2 returns a value in the ragne [-pi, pi), this is the heading facing the target
                                                                                                                                                    //atan is flipped b/c in normal coordinate systems, 0 degrees faces +X, but for our robot, 0 degrees faces +Y
 
-    turnToHeading(targetHeading, exit);
+    turnToHeading(targetHeading);
 };
 
-void Drivetrain::swingToHeading(std::string Direction, double targetHeading, bool exit) {
+void Drivetrain::swingToHeading(std::string Direction, double targetHeading) {
     this->swingPID.setError(0);
     this->swingPID.setOutputConstants(turnOutputConstants.kp, turnOutputConstants.ki, turnOutputConstants.kd);
     this->swingPID.setLogicConstants(turnLogicConstants.startIntegral);
@@ -633,17 +451,9 @@ void Drivetrain::swingToHeading(std::string Direction, double targetHeading, boo
     this->swingPID.setMotorOutput(0);
     this->swingPID.setCounter(0);
 
-    if(!prevChaining) {
-        this->swingPID.setIntegral(0);
-        this->swingPID.setPrevError(this->swingPID.startError);
-        this->swingPID.setPrevMotorOutput(0);
-    }
-
-    else {
-        this->swingPID.setIntegral(this->prevIntegral);
-        this->swingPID.setPrevError(this->prevError);
-        this->swingPID.setPrevMotorOutput(this->prevMotorOutput);
-    }
+    this->swingPID.setIntegral(0);
+    this->swingPID.setPrevError(this->swingPID.startError);
+    this->swingPID.setPrevMotorOutput(0);
 
     double swingOutput;
 
@@ -680,31 +490,18 @@ void Drivetrain::swingToHeading(std::string Direction, double targetHeading, boo
         }
 
         vex::wait(20, msec);
-    } while(exit ? !this->swingPID.settled() : std::abs(this->swingPID.error) > this->swingPID.deadband);
+    } while(!this->swingPID.settled());
 
 
     std::cout << "TurnPID is done!" << std::endl;
 
-    if(exit) {
-        LeftDrive.stop(hold);
-        RightDrive.stop(hold);
-
-        this->prevChaining = false;
-    }
-
-    else {
-        this->prevDirection = getSign(this->swingPID.startError);
-        this->prevError = this->swingPID.error;
-        this->prevIntegral = this->swingPID.integral;
-        this->prevMotorOutput = this->swingPID.motorOutput;
-
-        this->prevChaining = true;
-    }
+    LeftDrive.stop(hold);
+    RightDrive.stop(hold);
 
     std::cout << odometry.xCoordinate << ", " << odometry.yCoordinate << ", " << odometry.globalOrientation << std::endl;
 };
 
-void Drivetrain::moveToPose(double finalX, double finalY, double finalHeading, bool exit) {
+void Drivetrain::moveToPose(double finalX, double finalY, double finalHeading) {
     double targetDistance = hypot((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate));
     double targetHeading = fmod(radiansToDegrees(atan2((finalX - this->odometry.xCoordinate), (finalY - this->odometry.yCoordinate))) + 360, 360); //wraps the heading to [0, 360), which is necessary b/c atan2 returns a value in the ragne [-pi, pi), this is the heading facing the target
                                                                                                                                                    //atan is flipped b/c in normal coordinate systems, 0 degrees faces +X, but for our robot, 0 degrees faces +Y
@@ -722,17 +519,9 @@ void Drivetrain::moveToPose(double finalX, double finalY, double finalHeading, b
     this->drivePID.setMotorOutput(0);
     this->drivePID.setCounter(0);
 
-    if(!prevChaining) {
-        this->drivePID.setIntegral(0);
-        this->drivePID.setPrevError(this->drivePID.startError);
-        this->drivePID.setPrevMotorOutput(0);
-    }
-
-    else {
-        this->drivePID.setIntegral(this->prevIntegral);
-        this->drivePID.setPrevError(this->prevError);
-        this->drivePID.setPrevMotorOutput(this->prevMotorOutput);
-    }
+    this->drivePID.setIntegral(0);
+    this->drivePID.setPrevError(this->drivePID.startError);
+    this->drivePID.setPrevMotorOutput(0);
 
     this->driveTurnPID.setError(0);
     this->driveTurnPID.setOutputConstants(driveTurnOutputConstants.kp, driveTurnOutputConstants.ki, driveTurnOutputConstants.kd);
@@ -745,17 +534,9 @@ void Drivetrain::moveToPose(double finalX, double finalY, double finalHeading, b
     this->driveTurnPID.setMotorOutput(0);
     this->driveTurnPID.setCounter(0);
 
-    if(!prevChaining) {
-        this->driveTurnPID.setIntegral(0);
-        this->driveTurnPID.setPrevError(this->driveTurnPID.startError);
-        this->driveTurnPID.setPrevMotorOutput(0);
-    }
-
-    else {
-        this->driveTurnPID.setIntegral(this->prevIntegral);
-        this->driveTurnPID.setPrevError(this->prevError);
-        this->driveTurnPID.setPrevMotorOutput(this->prevMotorOutput);
-    }
+    this->driveTurnPID.setIntegral(0);
+    this->driveTurnPID.setPrevError(this->driveTurnPID.startError);
+    this->driveTurnPID.setPrevMotorOutput(0);
 
     if(std::abs(getTurnError(this->odometry.globalOrientation, targetHeading)) > 90) {
         this->driveTurnPID.error = getTurnError(this->odometry.globalOrientation, fmod((targetHeading + 180), 360)); //makes |error| <= 90 b/c it treats the back of the robot as the front
@@ -764,8 +545,6 @@ void Drivetrain::moveToPose(double finalX, double finalY, double finalHeading, b
     else {
         this->driveTurnPID.error = getTurnError(this->odometry.globalOrientation, targetHeading);
     }
-
-    bool locked = false;
 
     double driveOutput = 0;
     double driveTurnOutput = 0;
@@ -805,25 +584,12 @@ void Drivetrain::moveToPose(double finalX, double finalY, double finalHeading, b
         RightDrive.spin(forward, rightOutput, voltageUnits::volt);
 
         vex::wait(20, msec);
-    } while(exit ? !this->drivePID.settled() : std::abs(this->drivePID.error) > this->drivePID.deadband);
+    } while(!this->drivePID.settled());
 
     std::cout << "DriveToPointPID is done!" << std::endl;
 
-    if(exit) {
-        LeftDrive.stop(hold);
-        RightDrive.stop(hold);
-
-        this->prevChaining = false;
-    }
-
-    else {
-        this->prevDirection = getSign(this->drivePID.startError);
-        this->prevError = this->drivePID.error;
-        this->prevIntegral = this->drivePID.integral + this->driveTurnPID.integral;
-        this->prevMotorOutput = this->drivePID.motorOutput + this->driveTurnPID.motorOutput;
-
-        this->prevChaining = true;
-    }
+    LeftDrive.stop(hold);
+    RightDrive.stop(hold);
 };
 
 //==== Pure Pursuit Function ====//
@@ -878,45 +644,11 @@ void Drivetrain::followPath(PurePursuit& pathToFollow, double targetSpeed) {
     LeftDrive.stop(hold);
     RightDrive.stop(hold);
 
-    driveToPoint(pathToFollow.path[pathToFollow.path.size() - 1].x, pathToFollow.path[pathToFollow.path.size() - 1].y, true);
+    driveToPoint(pathToFollow.path[pathToFollow.path.size() - 1].x, pathToFollow.path[pathToFollow.path.size() - 1].y);
 };
 
 //==== AUTON MOVEMENTS ====//
 
-void Drivetrain::leftSpin(directionType direction, int velocity, percentUnits units) {
-    LeftDrive.spin(direction, velocity, units);
-};
-
-void Drivetrain::rightSpin(directionType direction, int velocity, percentUnits units) {
-    RightDrive.spin(direction, velocity, units);
-};
-
-void Drivetrain::stop() {
-    LeftDrive.stop();
-    RightDrive.stop();
-};
-
-void Drivetrain::oscillate(int numberOfOscillations, double speedOfOscillation, double timeOfOscillation) {
-    for(int i = 0; i < numberOfOscillations; i++) {
-        LeftDrive.spin(forward, speedOfOscillation, pct);
-        RightDrive.spin(forward, speedOfOscillation, pct);
-        wait(timeOfOscillation, msec);
-        LeftDrive.stop(hold);
-        RightDrive.stop(hold);
-        LeftDrive.spin(reverse, speedOfOscillation, pct);
-        RightDrive.spin(reverse, speedOfOscillation, pct);
-        if(i < numberOfOscillations - 1) {
-            wait(timeOfOscillation, msec);
-        }
-        LeftDrive.stop(hold);
-        RightDrive.stop(hold);
-    }
-
-    LeftDrive.stop(hold);
-    RightDrive.stop(hold);
-};
-
-//==== AUTON MOVEMENTS ====//
 void Drivetrain::leftSpin(directionType direction, int velocity, percentUnits units) {
     LeftDrive.spin(direction, velocity, units);
 };

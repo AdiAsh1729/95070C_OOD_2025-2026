@@ -28,8 +28,7 @@ class PID {
         double stallCounter; //difference between previous error and current error which tells you if you should add onto counter
         double counterLimit; //checks if the robot has stalled for too long
         double counter; //a stall constant, ++ every time diff in position is less than stallCounter
-        bool exit; //used for motion chaining, if true, ends motion, if false, doesn't
-        
+                
         //===== CONTROL_OUTPUT_CONSTANTS =====//
         double prevMotorOutput; //how fast our motors spun the prev loop
         double minMotorOutput; //minimum speed our motors need to spin at

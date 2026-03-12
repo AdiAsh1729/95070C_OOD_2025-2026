@@ -41,15 +41,6 @@ class Drivetrain {
         PID turnPID;
         PID swingPID;
 
-        //==== Chaining ====//
-        PIDType prevPIDType;
-
-        bool prevChaining; //checks if previous move was chaining
-        double prevDirection; //which direction LeftDrive moved, 1 if forward, -1 if reverse
-        double prevError; //needed for smooth derivative calculation
-        double prevIntegral; //previous motion's integral
-        double prevMotorOutput; //previous motion's motor output
-
         //==== Trampoline Method Setup ====//
         static int trackPositionStatic(void* instance); //the actual static function that is passed into the task positionTrackingTask
         int trackPosition(); //makes trackPosition a local function that can access odometry, Inertial, etc., removing the need for extern
@@ -150,19 +141,18 @@ class Drivetrain {
 
 
         //==== PID MOVEMENTS====//
-        void driveDistanceEncoder(double targetDistance, bool exit);
         void driveDistance(double targetDistance, bool exit);
-        void driveToPoint(double xCoordinate, double yCoordinate, bool exit);
+        void driveToPoint(double xCoordinate, double yCoordinate);
 
-        void driveDistanceSlow(double targetDistance, bool exit);
-        void driveToPointSlow(double finalX, double finalY, bool exit);
+        void driveDistanceSlow(double targetDistance);
+        void driveToPointSlow(double finalX, double finalY);
 
-        void turnToHeading(double targetHeading, bool exit);
-        void turnToPoint(double finalX, double finalY, bool exit);
-        void swingToHeading(std::string Direction, double targetHeading, bool exit);
-        void swingToPoint(double finalX, double finalY, bool exit);
+        void turnToHeading(double targetHeading);
+        void turnToPoint(double finalX, double finalY);
+        void swingToHeading(std::string Direction, double targetHeading);
+        void swingToPoint(double finalX, double finalY);
 
-        void moveToPose(double finalX, double finalY, double finalHeading, bool exit);
+        void moveToPose(double finalX, double finalY, double finalHeading);
 
         //==== Pure Pursuit ====//
         void followPath(PurePursuit& pathToFollow, double targetSpeed);

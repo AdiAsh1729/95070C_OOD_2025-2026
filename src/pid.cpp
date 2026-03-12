@@ -18,7 +18,6 @@ PID::PID(double startError, double kp, double ki, double kd, double startIntegra
     stallCounter(stallCounter),
     counterLimit(counterLimit),
     counter(0),
-    exit(exit),
     
     prevMotorOutput(0),
     minMotorOutput(minMotorOutput),
